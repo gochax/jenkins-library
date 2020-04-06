@@ -73,37 +73,6 @@ func gctsCloneRepository(config gctsCloneRepositoryOptions, telemetryData *telem
 		WithField("repositoryName", config.RepositoryName).
 		Info("Successfully cloned the Git repository to the local repository")
 
-	// defer resp.Body.Close()
-
-	// var response cloneResponseBody
-	// bodyText, readErr := ioutil.ReadAll(resp.Body)
-	// // TODO learn how to respond to errors correctly
-	// if readErr != nil {
-	// 	log.Entry().
-	// 		Warning("Could not read HTTP response")
-	// }
-	// json.Unmarshal(bodyText, &response)
-
-	// if cloneErr != nil {
-	// 	if resp.StatusCode == 500 {
-	// 		if response.ErrorLogs[1].Severity == "ERROR" &&
-	// 			response.ErrorLogs[1].Code == "GCTS.CLIENT.1420" {
-	// 			log.Entry().
-	// 				WithField("repositoryName", config.RepositoryName).
-	// 				Info("The repository has already been cloned")
-	// 			return nil
-	// 		}
-	// 		log.Entry().WithError(cloneErr).
-	// 			WithField("repositoryName", config.RepositoryName).
-	// 			Fatal("Cloning the repository failed")
-	// 	}
-	// 	log.Entry().WithError(cloneErr).
-	// 		Warning("We got an error back, but no idea what kind")
-	// }
-	// log.Entry().
-	// 	WithField("repositoryName", config.RepositoryName).
-	// 	Info("Successfully cloned the requested Git repository")
-
 	return nil
 }
 
