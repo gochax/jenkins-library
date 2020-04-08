@@ -19,6 +19,7 @@ type gctsDeployCommitOptions struct {
 	RepositoryName string `json:"repositoryName,omitempty"`
 	Host           string `json:"host,omitempty"`
 	Client         string `json:"client,omitempty"`
+	Commit         string `json:"commit,omitempty"`
 }
 
 // GctsDeployCommitCommand Pulls a commit from the remote Git repository to a local repository
@@ -62,12 +63,14 @@ func addGctsDeployCommitFlags(cmd *cobra.Command, stepConfig *gctsDeployCommitOp
 	cmd.Flags().StringVar(&stepConfig.RepositoryName, "repositoryName", os.Getenv("PIPER_repositoryName"), "Specifies the name (ID) of the repsitory to be cloned")
 	cmd.Flags().StringVar(&stepConfig.Host, "host", os.Getenv("PIPER_host"), "Specifies the host address of the ABAP system including the port")
 	cmd.Flags().StringVar(&stepConfig.Client, "client", os.Getenv("PIPER_client"), "Specifies the client of the ABAP system to be adressed")
+	cmd.Flags().StringVar(&stepConfig.Commit, "commit", os.Getenv("PIPER_commit"), "Specifies the commit to deploy")
 
 	cmd.MarkFlagRequired("username")
 	cmd.MarkFlagRequired("password")
 	cmd.MarkFlagRequired("repositoryName")
 	cmd.MarkFlagRequired("host")
 	cmd.MarkFlagRequired("client")
+	cmd.MarkFlagRequired("commit")
 }
 
 // retrieve step metadata
@@ -119,6 +122,14 @@ func gctsDeployCommitMetadata() config.StepData {
 						Type:        "string",
 						Mandatory:   true,
 						Aliases:     []config.Alias{{Name: "client"}},
+					},
+					{
+						Name:        "commit",
+						ResourceRef: []config.ResourceReference{},
+						Scope:       []string{"PARAMETERS", "STAGES", "STEPS"},
+						Type:        "string",
+						Mandatory:   true,
+						Aliases:     []config.Alias{{Name: "commit"}},
 					},
 				},
 			},
