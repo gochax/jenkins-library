@@ -79,4 +79,4 @@ spec:
         - PARAMETERS
         - STAGES
         - STEPS
-        default: Git
+        default: GIT
