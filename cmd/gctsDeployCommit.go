@@ -48,13 +48,13 @@ func gctsDeployCommit(config gctsDeployCommitOptions, telemetryData *telemetry.C
 		if err != nil {
 			log.Entry().WithError(err).
 				WithField("repositoryName", config.RepositoryName).
-				Fatalf("Failed to pull the latest commit: %v", response.Exception)
+				Fatalf("Failed to pull the commit: %v", response.Exception)
 		}
 		resp.Body.Close()
 	}
 	log.Entry().
 		WithField("repositoryName", config.RepositoryName).
-		Infof("Successfully pulled latest commit %v (previous commit was %v)", response.ToCommit, response.FromCommit)
+		Infof("Successfully pulled commit %v (previous commit was %v)", response.ToCommit, response.FromCommit)
 
 	return nil
 }
