@@ -55,7 +55,7 @@ func gctsRunUnitTestsForAllRepoPackages(config gctsRunUnitTestsForAllRepoPackage
 	for _, object := range repoObjects {
 		err := executeTestsForPackage(config, telemetryData, &client, header, object)
 		if err != nil {
-			log.Entry().Errorf("%v", err)
+			log.Entry().Fatalf("%v", err)
 		}
 	}
 	log.Entry().
