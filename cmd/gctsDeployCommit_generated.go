@@ -70,7 +70,6 @@ func addGctsDeployCommitFlags(cmd *cobra.Command, stepConfig *gctsDeployCommitOp
 	cmd.MarkFlagRequired("repositoryName")
 	cmd.MarkFlagRequired("host")
 	cmd.MarkFlagRequired("client")
-	cmd.MarkFlagRequired("commit")
 }
 
 // retrieve step metadata
@@ -128,7 +127,7 @@ func gctsDeployCommitMetadata() config.StepData {
 						ResourceRef: []config.ResourceReference{},
 						Scope:       []string{"PARAMETERS", "STAGES", "STEPS"},
 						Type:        "string",
-						Mandatory:   true,
+						Mandatory:   false,
 						Aliases:     []config.Alias{{Name: "commit"}},
 					},
 				},

@@ -68,6 +68,5 @@ spec:
         - PARAMETERS
         - STAGES
         - STEPS
-        mandatory: true
         aliases:
           - name: commit
