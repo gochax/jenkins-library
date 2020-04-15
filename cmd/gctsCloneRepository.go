@@ -1,24 +1,45 @@
 package cmd
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/cookiejar"
 
+	"github.com/SAP/jenkins-library/pkg/command"
 	piperhttp "github.com/SAP/jenkins-library/pkg/http"
 	"github.com/SAP/jenkins-library/pkg/log"
 	"github.com/SAP/jenkins-library/pkg/telemetry"
 )
 
-func gctsCloneRepository(config gctsCloneRepositoryOptions, telemetryData *telemetry.CustomData) error {
+func gctsCloneRepository(config gctsCloneRepositoryOptions, telemetryData *telemetry.CustomData) {
+	// for command execution use Command
+	c := command.Command{}
+	// reroute command output to logging framework
+	c.Stdout(log.Entry().Writer())
+	c.Stderr(log.Entry().Writer())
 
-	client := piperhttp.Client{}
+	// for http calls import  piperhttp "github.com/SAP/jenkins-library/pkg/http"
+	// and use a  &piperhttp.Client{} in a custom system
+	// Example: step checkmarxExecuteScan.go
+	httpClient := &piperhttp.Client{}
+
+	// error situations should stop execution through log.Entry().Fatal() call which leads to an os.Exit(1) in the end
+	err := cloneRepository(&config, telemetryData, &c, httpClient)
+	if err != nil {
+		log.Entry().WithError(err).Fatal("step execution failed")
+	}
+}
+
+func cloneRepository(config *gctsCloneRepositoryOptions, telemetryData *telemetry.CustomData, command execRunner,
+	httpClient piperhttp.Sender) error {
+
 	cookieJar, _ := cookiejar.New(nil)
 	clientOptions := piperhttp.ClientOptions{
 		CookieJar: cookieJar,
 		Username:  config.Username,
 		Password:  config.Password,
 	}
-	client.SetOptions(clientOptions)
+	httpClient.SetOptions(clientOptions)
 
 	type cloneResultBody struct {
 		RID          string `json:"rid"`
@@ -45,34 +66,38 @@ func gctsCloneRepository(config gctsCloneRepositoryOptions, telemetryData *telem
 		"/sap/bc/cts_abapvcs/repository/" + config.RepositoryName +
 		"/clone?sap-client=" + config.Client
 
-	resp, err := client.SendRequest("POST", url, nil, header, nil)
+	resp, httpErr := httpClient.SendRequest("POST", url, nil, header, nil)
+
+	defer func() {
+		if resp != nil && resp.Body != nil {
+			resp.Body.Close()
+		}
+	}()
 
 	if resp == nil {
-		log.Entry().Fatal(err)
+		return fmt.Errorf("cloning the repository failed: %w", httpErr)
 	}
+
 	var response cloneResponseBody
-	if resp != nil {
-		parsingErr := parseHTTPResponseBodyJSON(resp, &response)
-		if parsingErr != nil {
-			log.Entry().Warning(parsingErr)
-		}
-		if err != nil {
-			if resp.StatusCode == 500 && response.ErrorLogs[1].Code == "GCTS.CLIENT.1420" {
-				log.Entry().
-					WithField("repositoryName", config.RepositoryName).
-					Info("The repository has already been cloned")
-				return nil
-			}
-			log.Entry().WithError(err).
-				WithField("repositoryName", config.RepositoryName).
-				Fatalf("Cloning the repository failed %v", response.Exception)
-		}
-		resp.Body.Close()
+	parsingErr := parseHTTPResponseBodyJSON(resp, &response)
+
+	if parsingErr != nil {
+		log.Entry().Warning(parsingErr)
 	}
+
+	if httpErr != nil {
+		if resp.StatusCode == 500 && response.ErrorLogs[1].Code == "GCTS.CLIENT.1420" {
+			log.Entry().
+				WithField("repositoryName", config.RepositoryName).
+				Info("the repository has already been cloned")
+			return nil
+		}
+		return fmt.Errorf("cloning the repository failed: %w", httpErr)
+	}
+
 	log.Entry().
 		WithField("repositoryName", config.RepositoryName).
-		Info("Successfully cloned the Git repository to the local repository")
-
+		Info("successfully cloned the Git repository to the local repository")
 	return nil
 }
 
