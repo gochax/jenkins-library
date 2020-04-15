@@ -8,27 +8,41 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 
+	"github.com/SAP/jenkins-library/pkg/command"
 	piperhttp "github.com/SAP/jenkins-library/pkg/http"
 	"github.com/SAP/jenkins-library/pkg/log"
 	"github.com/SAP/jenkins-library/pkg/telemetry"
 )
 
-func gctsCreateRepository(config gctsCreateRepositoryOptions, telemetryData *telemetry.CustomData) error {
+func gctsCreateRepository(config gctsCreateRepositoryOptions, telemetryData *telemetry.CustomData) {
+	// for command execution use Command
+	c := command.Command{}
+	// reroute command output to logging framework
+	c.Stdout(log.Entry().Writer())
+	c.Stderr(log.Entry().Writer())
 
-	client := piperhttp.Client{}
+	// for http calls import  piperhttp "github.com/SAP/jenkins-library/pkg/http"
+	// and use a  &piperhttp.Client{} in a custom system
+	// Example: step checkmarxExecuteScan.go
+	httpClient := &piperhttp.Client{}
+
+	// error situations should stop execution through log.Entry().Fatal() call which leads to an os.Exit(1) in the end
+	err := createRepository(&config, telemetryData, &c, httpClient)
+	if err != nil {
+		log.Entry().WithError(err).Fatal("step execution failed")
+	}
+}
+
+func createRepository(config *gctsCreateRepositoryOptions, telemetryData *telemetry.CustomData, command execRunner,
+	httpClient piperhttp.Sender) error {
+
 	cookieJar, _ := cookiejar.New(nil)
 	clientOptions := piperhttp.ClientOptions{
 		CookieJar: cookieJar,
 		Username:  config.Username,
 		Password:  config.Password,
 	}
-	client.SetOptions(clientOptions)
-
-	// var response createResponseBody
-	// err := getRepoInfo(config, &client, &response)
-	// if err != nil {
-	// 	log.Entry().Warning(err)
-	// }
+	httpClient.SetOptions(clientOptions)
 
 	type repoData struct {
 		RID             string `json:"rid"`
@@ -81,7 +95,11 @@ func gctsCreateRepository(config gctsCreateRepositoryOptions, telemetryData *tel
 			GithubURLstring: config.GithubURL,
 		},
 	}
-	jsonBody, _ := json.Marshal(reqBody)
+	jsonBody, marshalErr := json.Marshal(reqBody)
+
+	if marshalErr != nil {
+		return fmt.Errorf("creating the repository locally failed: %w", marshalErr)
+	}
 
 	header := make(http.Header)
 	header.Set("Content-Type", "application/json")
@@ -90,76 +108,50 @@ func gctsCreateRepository(config gctsCreateRepositoryOptions, telemetryData *tel
 	url := "http://" + config.Host +
 		"/sap/bc/cts_abapvcs/repository?sap-client=" + config.Client
 
-	resp, err := client.SendRequest("POST", url, bytes.NewBuffer(jsonBody), header, nil)
+	resp, httpErr := httpClient.SendRequest("POST", url, bytes.NewBuffer(jsonBody), header, nil)
+
+	defer func() {
+		if resp != nil && resp.Body != nil {
+			resp.Body.Close()
+		}
+	}()
+
 	if resp == nil {
-		log.Entry().Fatal(err)
+		return fmt.Errorf("creating the repository locally failed: %w", httpErr)
 	}
+
 	var response createResponseBody
-	if resp != nil {
-		parsingErr := parseHTTPResponseBodyJSON(resp, &response)
-		if parsingErr != nil {
-			log.Entry().Warning(parsingErr)
-		}
-		if err != nil {
-			if resp.StatusCode == 500 && response.Exception == "Repository already exists" {
-				log.Entry().
-					WithField("repositoryName", config.RepositoryName).
-					Info("The repository already exists locally")
-				return nil
-			}
-			log.Entry().WithError(err).
+	parsingErr := parseHTTPResponseBodyJSON(resp, &response)
+
+	if parsingErr != nil {
+		log.Entry().Warning(parsingErr)
+	}
+
+	if httpErr != nil {
+		if resp.StatusCode == 500 && response.Exception == "Repository already exists" {
+			log.Entry().
 				WithField("repositoryName", config.RepositoryName).
-				Fatalf("Creating the repository failed: %v", response.Exception)
+				Info("the repository already exists locally")
+			return nil
 		}
-		resp.Body.Close()
+		return fmt.Errorf("creating the repository locally failed: %w", httpErr)
 	}
 
 	log.Entry().
 		WithField("repositoryName", config.RepositoryName).
-		Info("Successfully created the local repository")
-
+		Info("successfully created the local repository")
 	return nil
 }
 
-// func checkIfRepoExists(options gctsCreateRepositoryOptions, client piperhttp.Sender, response interface{}) (bool, error) {
-
-// }
-
-// func getRepoInfo(config gctsCreateRepositoryOptions, client piperhttp.Sender, response interface{}) error {
-
-// 	url := "http://" +
-// 		config.Host + "/sap/bc/cts_abapvcs/repository/" +
-// 		config.RepositoryName +
-// 		"?sap-client=" +
-// 		config.Client
-
-// 	resp, err := client.SendRequest("GET", url, nil, nil, nil)
-// 	if err != nil {
-// 		return fmt.Errorf("Request failed: %w", err)
-// 	}
-// 	defer resp.Body.Close()
-
-// 	err = parseHTTPResponseBodyJSON(resp, &response)
-
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	return nil
-// }
-
 func parseHTTPResponseBodyJSON(resp *http.Response, response interface{}) error {
 	if resp == nil {
-		return fmt.Errorf("http response was nil")
+		return fmt.Errorf("cannot parse HTTP response with value <nil>")
 	}
 	bodyText, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("could not read HTTP response body: %w", err)
 	}
 	json.Unmarshal(bodyText, &response)
-	// fmt.Println(resp.Status)
-	// fmt.Println(string(bodyText))
-	// fmt.Println(response)
 
 	return nil
 }
