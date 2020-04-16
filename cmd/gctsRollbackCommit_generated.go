@@ -19,9 +19,10 @@ type gctsRollbackCommitOptions struct {
 	RepositoryName string `json:"repositoryName,omitempty"`
 	Host           string `json:"host,omitempty"`
 	Client         string `json:"client,omitempty"`
+	Commit         string `json:"commit,omitempty"`
 }
 
-// GctsRollbackCommitCommand Perfoms rollback after bad commit
+// GctsRollbackCommitCommand Perfoms roll back of one (default) or several commit(s)
 func GctsRollbackCommitCommand() *cobra.Command {
 	metadata := gctsRollbackCommitMetadata()
 	var stepConfig gctsRollbackCommitOptions
@@ -29,8 +30,9 @@ func GctsRollbackCommitCommand() *cobra.Command {
 
 	var createGctsRollbackCommitCmd = &cobra.Command{
 		Use:   "gctsRollbackCommit",
-		Short: "Perfoms rollback after bad commit",
-		Long:  `Sets the last known non-faulty commit as the active commit of the repository.`,
+		Short: "Perfoms roll back of one (default) or several commit(s)",
+		Long: `If called without a <commit> parameter gctsRollbackCommit will roll back 
+ONE commit.`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			startTime = time.Now()
 			log.SetStepName("gctsRollbackCommit")
@@ -62,6 +64,7 @@ func addGctsRollbackCommitFlags(cmd *cobra.Command, stepConfig *gctsRollbackComm
 	cmd.Flags().StringVar(&stepConfig.RepositoryName, "repositoryName", os.Getenv("PIPER_repositoryName"), "Specifies the name (ID) of the repsitory to be cloned")
 	cmd.Flags().StringVar(&stepConfig.Host, "host", os.Getenv("PIPER_host"), "Specifies the host address of the ABAP system including the port")
 	cmd.Flags().StringVar(&stepConfig.Client, "client", os.Getenv("PIPER_client"), "Specifies the client of the ABAP system to be adressed")
+	cmd.Flags().StringVar(&stepConfig.Commit, "commit", os.Getenv("PIPER_commit"), "Specifies the commit to deploy")
 
 	cmd.MarkFlagRequired("username")
 	cmd.MarkFlagRequired("password")
@@ -119,6 +122,14 @@ func gctsRollbackCommitMetadata() config.StepData {
 						Type:        "string",
 						Mandatory:   true,
 						Aliases:     []config.Alias{{Name: "client"}},
+					},
+					{
+						Name:        "commit",
+						ResourceRef: []config.ResourceReference{},
+						Scope:       []string{"PARAMETERS", "STAGES", "STEPS"},
+						Type:        "string",
+						Mandatory:   false,
+						Aliases:     []config.Alias{{Name: "commit"}},
 					},
 				},
 			},

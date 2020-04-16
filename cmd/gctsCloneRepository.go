@@ -30,8 +30,7 @@ func gctsCloneRepository(config gctsCloneRepositoryOptions, telemetryData *telem
 	}
 }
 
-func cloneRepository(config *gctsCloneRepositoryOptions, telemetryData *telemetry.CustomData, command execRunner,
-	httpClient piperhttp.Sender) error {
+func cloneRepository(config *gctsCloneRepositoryOptions, telemetryData *telemetry.CustomData, command execRunner, httpClient piperhttp.Sender) error {
 
 	cookieJar, _ := cookiejar.New(nil)
 	clientOptions := piperhttp.ClientOptions{

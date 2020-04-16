@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	// "fmt"
+	"fmt"
 	"net/http/cookiejar"
 
 	"github.com/SAP/jenkins-library/pkg/command"
@@ -10,16 +10,34 @@ import (
 	"github.com/SAP/jenkins-library/pkg/telemetry"
 )
 
-func gctsRollbackCommit(config gctsRollbackCommitOptions, telemetryData *telemetry.CustomData) error {
+func gctsRollbackCommit(config gctsRollbackCommitOptions, telemetryData *telemetry.CustomData) {
+	// for command execution use Command
+	c := command.Command{}
+	// reroute command output to logging framework
+	c.Stdout(log.Entry().Writer())
+	c.Stderr(log.Entry().Writer())
 
-	client := piperhttp.Client{}
+	// for http calls import  piperhttp "github.com/SAP/jenkins-library/pkg/http"
+	// and use a  &piperhttp.Client{} in a custom system
+	// Example: step checkmarxExecuteScan.go
+	httpClient := &piperhttp.Client{}
+
+	// error situations should stop execution through log.Entry().Fatal() call which leads to an os.Exit(1) in the end
+	err := rollbackCommit(&config, telemetryData, &c, httpClient)
+	if err != nil {
+		log.Entry().WithError(err).Fatal("step execution failed")
+	}
+}
+
+func rollbackCommit(config *gctsRollbackCommitOptions, telemetryData *telemetry.CustomData, command execRunner, httpClient piperhttp.Sender) error {
+
 	cookieJar, _ := cookiejar.New(nil)
 	clientOptions := piperhttp.ClientOptions{
 		CookieJar: cookieJar,
 		Username:  config.Username,
 		Password:  config.Password,
 	}
-	client.SetOptions(clientOptions)
+	httpClient.SetOptions(clientOptions)
 
 	type rollbackResultBody struct {
 		RID          string `json:"rid"`
@@ -42,31 +60,42 @@ func gctsRollbackCommit(config gctsRollbackCommitOptions, telemetryData *telemet
 		"/sap/bc/cts_abapvcs/repository/" + config.RepositoryName +
 		"/getHistory?sap-client=" + config.Client
 
-	resp, err := client.SendRequest("GET", url, nil, nil, nil)
-	if resp == nil {
-		log.Entry().Fatalf("Request failed: %v", err)
+	resp, httpErr := httpClient.SendRequest("GET", url, nil, nil, nil)
+
+	defer func() {
+		if resp != nil && resp.Body != nil {
+			resp.Body.Close()
+		}
+	}()
+
+	if resp == nil || httpErr != nil {
+		return fmt.Errorf("rollback commit failed: %w", httpErr)
 	}
+
 	var response rollbackResponseBody
-	if resp != nil {
-		parsingErr := parseHTTPResponseBodyJSON(resp, &response)
-		if parsingErr != nil {
-			log.Entry().Warning(parsingErr)
-		}
-		if err != nil {
-			log.Entry().WithError(err).WithField("StatusCode", resp.Status).Fatalf("Could not get repository commit history %v", response.Exception)
-		}
-		c := command.Command{}
-		deployParams := []string{"gctsDeployCommit", "--username", config.Username, "--password", config.Password, "--host", config.Host, "--client", config.Client, "--repositoryName", config.RepositoryName, "--commit", response.Result[0].FromCommit}
-		deployErr := c.RunExecutable("./piper", deployParams...)
-		// TODO decide whats an ERROR and whats FATAL
-		if deployErr != nil {
-			log.Entry().WithError(deployErr).Fatalf("Failed to deploy commit %v", response.Result[0].FromCommit)
-		}
-		resp.Body.Close()
+	parsingErr := parseHTTPResponseBodyJSON(resp, &response)
+
+	if parsingErr != nil {
+		log.Entry().Warning(parsingErr)
 	}
+
+	var deployParams []string
+	if config.Commit != "" {
+		deployParams = []string{"gctsDeployCommit", "--username", config.Username, "--password", config.Password, "--host", config.Host, "--client", config.Client, "--repositoryName", config.RepositoryName, "--commit", config.Commit}
+	} else if response.Result[0].FromCommit != "" {
+		deployParams = []string{"gctsDeployCommit", "--username", config.Username, "--password", config.Password, "--host", config.Host, "--client", config.Client, "--repositoryName", config.RepositoryName, "--commit", response.Result[0].FromCommit}
+	} else {
+		return fmt.Errorf("no commit to rollback to identified")
+	}
+
+	deployErr := command.RunExecutable("./piper", deployParams...)
+
+	if deployErr != nil {
+		return fmt.Errorf("rollback commit failed: %w", deployErr)
+	}
+
 	log.Entry().
 		WithField("repositoryName", config.RepositoryName).
-		Infof("Rollback was successfull")
-
+		Infof("rollback was successfull")
 	return nil
 }

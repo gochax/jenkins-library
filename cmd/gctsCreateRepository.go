@@ -33,8 +33,7 @@ func gctsCreateRepository(config gctsCreateRepositoryOptions, telemetryData *tel
 	}
 }
 
-func createRepository(config *gctsCreateRepositoryOptions, telemetryData *telemetry.CustomData, command execRunner,
-	httpClient piperhttp.Sender) error {
+func createRepository(config *gctsCreateRepositoryOptions, telemetryData *telemetry.CustomData, command execRunner, httpClient piperhttp.Sender) error {
 
 	cookieJar, _ := cookiejar.New(nil)
 	clientOptions := piperhttp.ClientOptions{
