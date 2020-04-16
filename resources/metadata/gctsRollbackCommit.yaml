@@ -1,8 +1,9 @@
 metadata:
   name: gctsRollbackCommit
-  description: Perfoms rollback after bad commit
+  description: Perfoms roll back of one (default) or several commit(s)
   longDescription: |
-    Sets the last known non-faulty commit as the active commit of the repository.
+    If called without a <commit> parameter gctsRollbackCommit will roll back 
+    ONE commit.
 
 spec:
   inputs:
@@ -61,3 +62,12 @@ spec:
         mandatory: true
         aliases:
           - name: client
+      - name: commit
+        type: string
+        description: Specifies the commit to deploy
+        scope:
+        - PARAMETERS
+        - STAGES
+        - STEPS
+        aliases:
+          - name: commit
