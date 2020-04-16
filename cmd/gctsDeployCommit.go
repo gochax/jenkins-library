@@ -1,23 +1,43 @@
 package cmd
 
 import (
+	"fmt"
 	"net/http/cookiejar"
 
+	"github.com/SAP/jenkins-library/pkg/command"
 	piperhttp "github.com/SAP/jenkins-library/pkg/http"
 	"github.com/SAP/jenkins-library/pkg/log"
 	"github.com/SAP/jenkins-library/pkg/telemetry"
 )
 
-func gctsDeployCommit(config gctsDeployCommitOptions, telemetryData *telemetry.CustomData) error {
+func gctsDeployCommit(config gctsDeployCommitOptions, telemetryData *telemetry.CustomData) {
+	// for command execution use Command
+	c := command.Command{}
+	// reroute command output to logging framework
+	c.Stdout(log.Entry().Writer())
+	c.Stderr(log.Entry().Writer())
 
-	client := piperhttp.Client{}
+	// for http calls import  piperhttp "github.com/SAP/jenkins-library/pkg/http"
+	// and use a  &piperhttp.Client{} in a custom system
+	// Example: step checkmarxExecuteScan.go
+	httpClient := &piperhttp.Client{}
+
+	// error situations should stop execution through log.Entry().Fatal() call which leads to an os.Exit(1) in the end
+	err := deployCommit(&config, telemetryData, &c, httpClient)
+	if err != nil {
+		log.Entry().WithError(err).Fatal("step execution failed")
+	}
+}
+
+func deployCommit(config *gctsDeployCommitOptions, telemetryData *telemetry.CustomData, command execRunner, httpClient piperhttp.Sender) error {
+
 	cookieJar, _ := cookiejar.New(nil)
 	clientOptions := piperhttp.ClientOptions{
 		CookieJar: cookieJar,
 		Username:  config.Username,
 		Password:  config.Password,
 	}
-	client.SetOptions(clientOptions)
+	httpClient.SetOptions(clientOptions)
 
 	type deployResponseBody struct {
 		Trkorr     string    `json:"trkorr"`
@@ -35,26 +55,27 @@ func gctsDeployCommit(config gctsDeployCommitOptions, telemetryData *telemetry.C
 		url = url + "&request=" + config.Commit
 	}
 
-	resp, err := client.SendRequest("GET", url, nil, nil, nil)
-	if resp == nil {
-		log.Entry().Fatal(err)
+	resp, httpErr := httpClient.SendRequest("GET", url, nil, nil, nil)
+
+	defer func() {
+		if resp != nil && resp.Body != nil {
+			resp.Body.Close()
+		}
+	}()
+
+	if resp == nil || httpErr != nil {
+		return fmt.Errorf("deploy commit failed: %w", httpErr)
 	}
+
 	var response deployResponseBody
-	if resp != nil {
-		parsingErr := parseHTTPResponseBodyJSON(resp, &response)
-		if parsingErr != nil {
-			log.Entry().Warning(parsingErr)
-		}
-		if err != nil {
-			log.Entry().WithError(err).
-				WithField("repositoryName", config.RepositoryName).
-				Fatalf("Failed to pull the commit: %v", response.Exception)
-		}
-		resp.Body.Close()
+	parsingErr := parseHTTPResponseBodyJSON(resp, &response)
+
+	if parsingErr != nil {
+		log.Entry().Warning(parsingErr)
 	}
+
 	log.Entry().
 		WithField("repositoryName", config.RepositoryName).
-		Infof("Successfully pulled commit %v (previous commit was %v)", response.ToCommit, response.FromCommit)
-
+		Infof("successfully deployed commit %v (previous commit was %v)", response.ToCommit, response.FromCommit)
 	return nil
 }
