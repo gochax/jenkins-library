@@ -69,7 +69,7 @@ func TestGctsDeployCommitFailure(t *testing.T) {
 		Password:       "testPassword",
 	}
 
-	t.Run("deploy latest commit failed", func(t *testing.T) {
+	t.Run("http error occurred", func(t *testing.T) {
 
 		httpClient := httpMock{StatusCode: 500, ResponseBody: `{
 			"log": [
@@ -103,7 +103,7 @@ func TestGctsDeployCommitFailure(t *testing.T) {
 
 		err := deployCommit(&config, nil, nil, &httpClient)
 
-		assert.EqualError(t, err, "deploy commit failed: a http error occured")
+		assert.EqualError(t, err, "deploy commit failed: a http error occurred")
 
 	})
 

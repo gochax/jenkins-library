@@ -208,7 +208,7 @@ func TestGctsCloneRepositoryFailure(t *testing.T) {
 		}`}
 
 		err := cloneRepository(&config, nil, nil, &httpClient)
-		assert.EqualError(t, err, "cloning the repository failed: a http error occured")
+		assert.EqualError(t, err, "cloning the repository failed: a http error occurred")
 
 	})
 }
@@ -216,6 +216,7 @@ func TestGctsCloneRepositoryFailure(t *testing.T) {
 type httpMock struct {
 	Method       string                  // is set during test execution
 	URL          string                  // is set before test execution
+	Header       map[string][]string     // is set before test execution
 	ResponseBody string                  // is set before test execution
 	Options      piperhttp.ClientOptions // is set during test
 	StatusCode   int                     // is set during test
@@ -240,12 +241,12 @@ func (c *httpMock) SendRequest(method string, url string, r io.Reader, header ht
 
 	res := http.Response{
 		StatusCode: c.StatusCode,
-		Header:     header,
+		Header:     c.Header,
 		Body:       ioutil.NopCloser(bytes.NewReader([]byte(c.ResponseBody))),
 	}
 
 	if c.StatusCode >= 400 {
-		return &res, errors.New("a http error occured")
+		return &res, errors.New("a http error occurred")
 	}
 
 	return &res, nil

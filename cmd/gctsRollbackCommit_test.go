@@ -1,9 +1,10 @@
 package cmd
 
 import (
+	"testing"
+
 	"github.com/SAP/jenkins-library/pkg/mock"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestGctsRollbackCommitSuccess(t *testing.T) {
@@ -63,10 +64,22 @@ func TestGctsRollbackCommitSuccess(t *testing.T) {
 
 		}
 	})
+}
+
+func TestGctsRollbackToGivenCommitSuccess(t *testing.T) {
+
+	execRunner := mock.ExecMockRunner{}
+	config := gctsRollbackCommitOptions{
+		Host:           "testHost.wdf.sap.corp:50000",
+		Client:         "000",
+		RepositoryName: "testRepo",
+		Username:       "testUser",
+		Password:       "testPassword",
+		Commit:         "8aeebd1a125d5d27499bd30699f4db2e79f51ee7",
+	}
 
 	t.Run("rollback to given commit", func(t *testing.T) {
 
-		config.Commit = "8aeebd1a125d5d27499bd30699f4db2e79f51ee7"
 		httpClient := httpMock{StatusCode: 200, ResponseBody: `{
 				"result": [
 					{
@@ -163,7 +176,7 @@ func TestGctsRollbackCommitFailure(t *testing.T) {
 
 		err := rollbackCommit(&config, nil, &execRunner, &httpClient)
 
-		assert.EqualError(t, err, "rollback commit failed: a http error occured")
+		assert.EqualError(t, err, "rollback commit failed: a http error occurred")
 	})
 
 }
