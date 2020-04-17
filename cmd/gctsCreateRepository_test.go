@@ -138,7 +138,7 @@ func TestGctsCreateRepositoryFailure(t *testing.T) {
 
 		err := createRepository(&config, nil, nil, &httpClient)
 
-		assert.EqualError(t, err, "creating the repository locally failed: a http error occured")
+		assert.EqualError(t, err, "creating the repository locally failed: a http error occurred")
 
 	})
 
