@@ -7,8 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TODO add additional tests for runUnitTestsForAllRepoPackages exits/failures
-
 func TestDiscoverySuccess(t *testing.T) {
 
 	config := gctsRunUnitTestsForAllRepoPackagesOptions{
