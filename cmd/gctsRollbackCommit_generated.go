@@ -93,7 +93,7 @@ func gctsRollbackCommitMetadata() config.StepData {
 						Scope:       []string{"PARAMETERS", "STAGES", "STEPS"},
 						Type:        "string",
 						Mandatory:   true,
-						Aliases:     []config.Alias{{Name: "username"}},
+						Aliases:     []config.Alias{},
 					},
 					{
 						Name:        "password",
@@ -101,7 +101,7 @@ func gctsRollbackCommitMetadata() config.StepData {
 						Scope:       []string{"PARAMETERS", "STAGES", "STEPS"},
 						Type:        "string",
 						Mandatory:   true,
-						Aliases:     []config.Alias{{Name: "password"}},
+						Aliases:     []config.Alias{},
 					},
 					{
 						Name:        "repository",
@@ -109,7 +109,7 @@ func gctsRollbackCommitMetadata() config.StepData {
 						Scope:       []string{"PARAMETERS", "STAGES", "STEPS"},
 						Type:        "string",
 						Mandatory:   true,
-						Aliases:     []config.Alias{{Name: "repository"}},
+						Aliases:     []config.Alias{},
 					},
 					{
 						Name:        "host",
@@ -117,7 +117,7 @@ func gctsRollbackCommitMetadata() config.StepData {
 						Scope:       []string{"PARAMETERS", "STAGES", "STEPS"},
 						Type:        "string",
 						Mandatory:   true,
-						Aliases:     []config.Alias{{Name: "host"}},
+						Aliases:     []config.Alias{},
 					},
 					{
 						Name:        "client",
@@ -125,7 +125,7 @@ func gctsRollbackCommitMetadata() config.StepData {
 						Scope:       []string{"PARAMETERS", "STAGES", "STEPS"},
 						Type:        "string",
 						Mandatory:   true,
-						Aliases:     []config.Alias{{Name: "client"}},
+						Aliases:     []config.Alias{},
 					},
 					{
 						Name:        "commit",
@@ -133,7 +133,7 @@ func gctsRollbackCommitMetadata() config.StepData {
 						Scope:       []string{"PARAMETERS", "STAGES", "STEPS"},
 						Type:        "string",
 						Mandatory:   false,
-						Aliases:     []config.Alias{{Name: "commit"}},
+						Aliases:     []config.Alias{},
 					},
 				},
 			},

@@ -90,7 +90,7 @@ func gctsRunUnitTestsForAllRepoPackagesMetadata() config.StepData {
 						Scope:       []string{"PARAMETERS", "STAGES", "STEPS"},
 						Type:        "string",
 						Mandatory:   true,
-						Aliases:     []config.Alias{{Name: "username"}},
+						Aliases:     []config.Alias{},
 					},
 					{
 						Name:        "password",
@@ -98,7 +98,7 @@ func gctsRunUnitTestsForAllRepoPackagesMetadata() config.StepData {
 						Scope:       []string{"PARAMETERS", "STAGES", "STEPS"},
 						Type:        "string",
 						Mandatory:   true,
-						Aliases:     []config.Alias{{Name: "password"}},
+						Aliases:     []config.Alias{},
 					},
 					{
 						Name:        "repository",
@@ -106,7 +106,7 @@ func gctsRunUnitTestsForAllRepoPackagesMetadata() config.StepData {
 						Scope:       []string{"PARAMETERS", "STAGES", "STEPS"},
 						Type:        "string",
 						Mandatory:   true,
-						Aliases:     []config.Alias{{Name: "repository"}},
+						Aliases:     []config.Alias{},
 					},
 					{
 						Name:        "host",
@@ -114,7 +114,7 @@ func gctsRunUnitTestsForAllRepoPackagesMetadata() config.StepData {
 						Scope:       []string{"PARAMETERS", "STAGES", "STEPS"},
 						Type:        "string",
 						Mandatory:   true,
-						Aliases:     []config.Alias{{Name: "host"}},
+						Aliases:     []config.Alias{},
 					},
 					{
 						Name:        "client",
@@ -122,7 +122,7 @@ func gctsRunUnitTestsForAllRepoPackagesMetadata() config.StepData {
 						Scope:       []string{"PARAMETERS", "STAGES", "STEPS"},
 						Type:        "string",
 						Mandatory:   true,
-						Aliases:     []config.Alias{{Name: "client"}},
+						Aliases:     []config.Alias{},
 					},
 				},
 			},
