@@ -73,7 +73,7 @@ func runUnitTestsForAllRepoPackages(config *gctsRunUnitTestsForAllRepoPackagesOp
 	}
 
 	log.Entry().
-		WithField("repositoryName", config.RepositoryName).
+		WithField("repository", config.Repository).
 		Info("all unit tests were successfull")
 	return nil
 }
@@ -201,7 +201,7 @@ func getPackageList(config *gctsRunUnitTestsForAllRepoPackagesOptions, telemetry
 	}
 
 	url := "http://" + config.Host +
-		"/sap/bc/cts_abapvcs/repository/" + config.RepositoryName +
+		"/sap/bc/cts_abapvcs/repository/" + config.Repository +
 		"/getObjects?sap-client=" + config.Client
 
 	resp, httpErr := client.SendRequest("GET", url, nil, nil, nil)

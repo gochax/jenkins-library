@@ -10,11 +10,11 @@ import (
 func TestDiscoverySuccess(t *testing.T) {
 
 	config := gctsRunUnitTestsForAllRepoPackagesOptions{
-		Host:           "testHost.wdf.sap.corp:50000",
-		Client:         "000",
-		RepositoryName: "testRepo",
-		Username:       "testUser",
-		Password:       "testPassword",
+		Host:       "testHost.wdf.sap.corp:50000",
+		Client:     "000",
+		Repository: "testRepo",
+		Username:   "testUser",
+		Password:   "testPassword",
 	}
 
 	t.Run("discovery successfull", func(t *testing.T) {
@@ -51,11 +51,11 @@ func TestDiscoverySuccess(t *testing.T) {
 func TestDiscoveryFailure(t *testing.T) {
 
 	config := gctsRunUnitTestsForAllRepoPackagesOptions{
-		Host:           "testHost.wdf.sap.corp:50000",
-		Client:         "000",
-		RepositoryName: "testRepo",
-		Username:       "testUser",
-		Password:       "testPassword",
+		Host:       "testHost.wdf.sap.corp:50000",
+		Client:     "000",
+		Repository: "testRepo",
+		Username:   "testUser",
+		Password:   "testPassword",
 	}
 
 	t.Run("a http error occurred", func(t *testing.T) {
@@ -146,11 +146,11 @@ func TestDiscoveryFailure(t *testing.T) {
 func TestGetPackageListSuccess(t *testing.T) {
 
 	config := gctsRunUnitTestsForAllRepoPackagesOptions{
-		Host:           "testHost.wdf.sap.corp:50000",
-		Client:         "000",
-		RepositoryName: "testRepo",
-		Username:       "testUser",
-		Password:       "testPassword",
+		Host:       "testHost.wdf.sap.corp:50000",
+		Client:     "000",
+		Repository: "testRepo",
+		Username:   "testUser",
+		Password:   "testPassword",
 	}
 
 	t.Run("return multiple objects sucessfully", func(t *testing.T) {
@@ -227,11 +227,11 @@ func TestGetPackageListSuccess(t *testing.T) {
 func TestGetPackageListFailure(t *testing.T) {
 
 	config := gctsRunUnitTestsForAllRepoPackagesOptions{
-		Host:           "testHost.wdf.sap.corp:50000",
-		Client:         "000",
-		RepositoryName: "testRepo",
-		Username:       "testUser",
-		Password:       "testPassword",
+		Host:       "testHost.wdf.sap.corp:50000",
+		Client:     "000",
+		Repository: "testRepo",
+		Username:   "testUser",
+		Password:   "testPassword",
 	}
 
 	t.Run("http error occured", func(t *testing.T) {
@@ -251,11 +251,11 @@ func TestGetPackageListFailure(t *testing.T) {
 func TestExecuteTestsForPackageSuccess(t *testing.T) {
 
 	config := gctsRunUnitTestsForAllRepoPackagesOptions{
-		Host:           "testHost.wdf.sap.corp:50000",
-		Client:         "000",
-		RepositoryName: "testRepo",
-		Username:       "testUser",
-		Password:       "testPassword",
+		Host:       "testHost.wdf.sap.corp:50000",
+		Client:     "000",
+		Repository: "testRepo",
+		Username:   "testUser",
+		Password:   "testPassword",
 	}
 
 	header := make(http.Header)
@@ -325,11 +325,11 @@ func TestExecuteTestsForPackageSuccess(t *testing.T) {
 func TestExecuteTestsForPackageFailure(t *testing.T) {
 
 	config := gctsRunUnitTestsForAllRepoPackagesOptions{
-		Host:           "testHost.wdf.sap.corp:50000",
-		Client:         "000",
-		RepositoryName: "testRepo",
-		Username:       "testUser",
-		Password:       "testPassword",
+		Host:       "testHost.wdf.sap.corp:50000",
+		Client:     "000",
+		Repository: "testRepo",
+		Username:   "testUser",
+		Password:   "testPassword",
 	}
 
 	t.Run("some unit tests failed", func(t *testing.T) {

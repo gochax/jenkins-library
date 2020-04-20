@@ -57,7 +57,7 @@ func rollbackCommit(config *gctsRollbackCommitOptions, telemetryData *telemetry.
 	}
 
 	url := "http://" + config.Host +
-		"/sap/bc/cts_abapvcs/repository/" + config.RepositoryName +
+		"/sap/bc/cts_abapvcs/repository/" + config.Repository +
 		"/getHistory?sap-client=" + config.Client
 
 	resp, httpErr := httpClient.SendRequest("GET", url, nil, nil, nil)
@@ -81,9 +81,9 @@ func rollbackCommit(config *gctsRollbackCommitOptions, telemetryData *telemetry.
 
 	var deployParams []string
 	if config.Commit != "" {
-		deployParams = []string{"gctsDeployCommit", "--username", config.Username, "--password", config.Password, "--host", config.Host, "--client", config.Client, "--repositoryName", config.RepositoryName, "--commit", config.Commit}
+		deployParams = []string{"gctsDeployCommit", "--username", config.Username, "--password", config.Password, "--host", config.Host, "--client", config.Client, "--repository", config.Repository, "--commit", config.Commit}
 	} else if response.Result[0].FromCommit != "" {
-		deployParams = []string{"gctsDeployCommit", "--username", config.Username, "--password", config.Password, "--host", config.Host, "--client", config.Client, "--repositoryName", config.RepositoryName, "--commit", response.Result[0].FromCommit}
+		deployParams = []string{"gctsDeployCommit", "--username", config.Username, "--password", config.Password, "--host", config.Host, "--client", config.Client, "--repository", config.Repository, "--commit", response.Result[0].FromCommit}
 	} else {
 		return fmt.Errorf("no commit to rollback to identified")
 	}
@@ -95,7 +95,7 @@ func rollbackCommit(config *gctsRollbackCommitOptions, telemetryData *telemetry.
 	}
 
 	log.Entry().
-		WithField("repositoryName", config.RepositoryName).
+		WithField("repository", config.Repository).
 		Infof("rollback was successfull")
 	return nil
 }

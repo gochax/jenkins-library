@@ -15,11 +15,11 @@ import (
 func TestGctsCloneRepositorySuccess(t *testing.T) {
 
 	config := gctsCloneRepositoryOptions{
-		Host:           "testHost.wdf.sap.corp:50000",
-		Client:         "000",
-		RepositoryName: "testRepo",
-		Username:       "testUser",
-		Password:       "testPassword",
+		Host:       "testHost.wdf.sap.corp:50000",
+		Client:     "000",
+		Repository: "testRepo",
+		Username:   "testUser",
+		Password:   "testPassword",
 	}
 
 	t.Run("cloning successfull", func(t *testing.T) {
@@ -141,11 +141,11 @@ func TestGctsCloneRepositorySuccess(t *testing.T) {
 func TestGctsCloneRepositoryFailure(t *testing.T) {
 
 	config := gctsCloneRepositoryOptions{
-		Host:           "testHost.wdf.sap.corp:50000",
-		Client:         "000",
-		RepositoryName: "testRepo",
-		Username:       "testUser",
-		Password:       "testPassword",
+		Host:       "testHost.wdf.sap.corp:50000",
+		Client:     "000",
+		Repository: "testRepo",
+		Username:   "testUser",
+		Password:   "testPassword",
 	}
 
 	t.Run("cloning repository failed", func(t *testing.T) {

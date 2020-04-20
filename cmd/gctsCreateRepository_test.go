@@ -8,14 +8,14 @@ import (
 func TestGctsCreateRepositorySuccess(t *testing.T) {
 
 	config := gctsCreateRepositoryOptions{
-		Host:           "testHost.wdf.sap.corp:50000",
-		Client:         "000",
-		RepositoryName: "testRepo",
-		Username:       "testUser",
-		Password:       "testPassword",
-		GithubURL:      "https://github.com/org/testRepo",
-		Role:           "SOURCE",
-		VSID:           "TST",
+		Host:                "testHost.wdf.sap.corp:50000",
+		Client:              "000",
+		Repository:          "testRepo",
+		Username:            "testUser",
+		Password:            "testPassword",
+		RemoteRepositoryURL: "https://github.com/org/testRepo",
+		Role:                "SOURCE",
+		VSID:                "TST",
 	}
 
 	t.Run("creating repository locally successfull", func(t *testing.T) {
@@ -94,14 +94,14 @@ func TestGctsCreateRepositorySuccess(t *testing.T) {
 func TestGctsCreateRepositoryFailure(t *testing.T) {
 
 	config := gctsCreateRepositoryOptions{
-		Host:           "testHost.wdf.sap.corp:50000",
-		Client:         "000",
-		RepositoryName: "testRepo",
-		Username:       "testUser",
-		Password:       "testPassword",
-		GithubURL:      "https://github.com/org/testRepo",
-		Role:           "SOURCE",
-		VSID:           "TST",
+		Host:                "testHost.wdf.sap.corp:50000",
+		Client:              "000",
+		Repository:          "testRepo",
+		Username:            "testUser",
+		Password:            "testPassword",
+		RemoteRepositoryURL: "https://github.com/org/testRepo",
+		Role:                "SOURCE",
+		VSID:                "TST",
 	}
 
 	t.Run("creating repository locally failed", func(t *testing.T) {

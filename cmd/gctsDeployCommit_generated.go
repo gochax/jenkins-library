@@ -14,12 +14,12 @@ import (
 )
 
 type gctsDeployCommitOptions struct {
-	Username       string `json:"username,omitempty"`
-	Password       string `json:"password,omitempty"`
-	RepositoryName string `json:"repositoryName,omitempty"`
-	Host           string `json:"host,omitempty"`
-	Client         string `json:"client,omitempty"`
-	Commit         string `json:"commit,omitempty"`
+	Username   string `json:"username,omitempty"`
+	Password   string `json:"password,omitempty"`
+	Repository string `json:"repository,omitempty"`
+	Host       string `json:"host,omitempty"`
+	Client     string `json:"client,omitempty"`
+	Commit     string `json:"commit,omitempty"`
 }
 
 // GctsDeployCommitCommand Pulls a commit from the remote Git repository to a local repository
@@ -64,14 +64,14 @@ func GctsDeployCommitCommand() *cobra.Command {
 func addGctsDeployCommitFlags(cmd *cobra.Command, stepConfig *gctsDeployCommitOptions) {
 	cmd.Flags().StringVar(&stepConfig.Username, "username", os.Getenv("PIPER_username"), "User to authenticate to the ABAP system")
 	cmd.Flags().StringVar(&stepConfig.Password, "password", os.Getenv("PIPER_password"), "Password to authenticate to the ABAP system")
-	cmd.Flags().StringVar(&stepConfig.RepositoryName, "repositoryName", os.Getenv("PIPER_repositoryName"), "Specifies the name (ID) of the repsitory to be cloned")
+	cmd.Flags().StringVar(&stepConfig.Repository, "repository", os.Getenv("PIPER_repository"), "Specifies the name (ID) of the repsitory to be cloned")
 	cmd.Flags().StringVar(&stepConfig.Host, "host", os.Getenv("PIPER_host"), "Specifies the host address of the ABAP system including the port")
 	cmd.Flags().StringVar(&stepConfig.Client, "client", os.Getenv("PIPER_client"), "Specifies the client of the ABAP system to be adressed")
 	cmd.Flags().StringVar(&stepConfig.Commit, "commit", os.Getenv("PIPER_commit"), "Specifies the commit to deploy")
 
 	cmd.MarkFlagRequired("username")
 	cmd.MarkFlagRequired("password")
-	cmd.MarkFlagRequired("repositoryName")
+	cmd.MarkFlagRequired("repository")
 	cmd.MarkFlagRequired("host")
 	cmd.MarkFlagRequired("client")
 }
@@ -103,12 +103,12 @@ func gctsDeployCommitMetadata() config.StepData {
 						Aliases:     []config.Alias{{Name: "password"}},
 					},
 					{
-						Name:        "repositoryName",
+						Name:        "repository",
 						ResourceRef: []config.ResourceReference{},
 						Scope:       []string{"PARAMETERS", "STAGES", "STEPS"},
 						Type:        "string",
 						Mandatory:   true,
-						Aliases:     []config.Alias{{Name: "repositoryName"}},
+						Aliases:     []config.Alias{{Name: "repository"}},
 					},
 					{
 						Name:        "host",

@@ -49,7 +49,7 @@ func deployCommit(config *gctsDeployCommitOptions, telemetryData *telemetry.Cust
 	}
 
 	url := "http://" + config.Host +
-		"/sap/bc/cts_abapvcs/repository/" + config.RepositoryName +
+		"/sap/bc/cts_abapvcs/repository/" + config.Repository +
 		"/pullByCommit?sap-client=" + config.Client
 	if config.Commit != "" {
 		url = url + "&request=" + config.Commit
@@ -75,7 +75,7 @@ func deployCommit(config *gctsDeployCommitOptions, telemetryData *telemetry.Cust
 	}
 
 	log.Entry().
-		WithField("repositoryName", config.RepositoryName).
+		WithField("repository", config.Repository).
 		Infof("successfully deployed commit %v (previous commit was %v)", response.ToCommit, response.FromCommit)
 	return nil
 }

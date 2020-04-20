@@ -62,7 +62,7 @@ func cloneRepository(config *gctsCloneRepositoryOptions, telemetryData *telemetr
 	header.Add("Accept", "application/json")
 
 	url := "http://" + config.Host +
-		"/sap/bc/cts_abapvcs/repository/" + config.RepositoryName +
+		"/sap/bc/cts_abapvcs/repository/" + config.Repository +
 		"/clone?sap-client=" + config.Client
 
 	resp, httpErr := httpClient.SendRequest("POST", url, nil, header, nil)
@@ -87,7 +87,7 @@ func cloneRepository(config *gctsCloneRepositoryOptions, telemetryData *telemetr
 	if httpErr != nil {
 		if resp.StatusCode == 500 && response.ErrorLogs[1].Code == "GCTS.CLIENT.1420" {
 			log.Entry().
-				WithField("repositoryName", config.RepositoryName).
+				WithField("repository", config.Repository).
 				Info("the repository has already been cloned")
 			return nil
 		}
@@ -95,7 +95,7 @@ func cloneRepository(config *gctsCloneRepositoryOptions, telemetryData *telemetr
 	}
 
 	log.Entry().
-		WithField("repositoryName", config.RepositoryName).
+		WithField("repository", config.Repository).
 		Info("successfully cloned the Git repository to the local repository")
 	return nil
 }

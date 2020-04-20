@@ -8,11 +8,11 @@ import (
 func TestGctsDeployCommitSuccess(t *testing.T) {
 
 	config := gctsDeployCommitOptions{
-		Host:           "testHost.wdf.sap.corp:50000",
-		Client:         "000",
-		RepositoryName: "testRepo",
-		Username:       "testUser",
-		Password:       "testPassword",
+		Host:       "testHost.wdf.sap.corp:50000",
+		Client:     "000",
+		Repository: "testRepo",
+		Username:   "testUser",
+		Password:   "testPassword",
 	}
 
 	t.Run("deploy latest commit", func(t *testing.T) {
@@ -62,11 +62,11 @@ func TestGctsDeployCommitSuccess(t *testing.T) {
 func TestGctsDeployCommitFailure(t *testing.T) {
 
 	config := gctsDeployCommitOptions{
-		Host:           "testHost.wdf.sap.corp:50000",
-		Client:         "000",
-		RepositoryName: "testRepo",
-		Username:       "testUser",
-		Password:       "testPassword",
+		Host:       "testHost.wdf.sap.corp:50000",
+		Client:     "000",
+		Repository: "testRepo",
+		Username:   "testUser",
+		Password:   "testPassword",
 	}
 
 	t.Run("http error occurred", func(t *testing.T) {
