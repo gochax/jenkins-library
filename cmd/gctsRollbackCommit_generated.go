@@ -31,13 +31,17 @@ func GctsRollbackCommitCommand() *cobra.Command {
 	var createGctsRollbackCommitCmd = &cobra.Command{
 		Use:   "gctsRollbackCommit",
 		Short: "Perfoms roll back of one (default) or several commit(s)",
-		Long: `If called without a <commit> parameter gctsRollbackCommit will roll back 
+		Long: `If called without a <commit> parameter gctsRollbackCommit will roll back
 ONE commit.`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			startTime = time.Now()
 			log.SetStepName("gctsRollbackCommit")
 			log.SetVerbose(GeneralConfig.Verbose)
-			return PrepareConfig(cmd, &metadata, "gctsRollbackCommit", &stepConfig, config.OpenPiperFile)
+			err := PrepareConfig(cmd, &metadata, "gctsRollbackCommit", &stepConfig, config.OpenPiperFile)
+			if err != nil {
+				return err
+			}
+			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			telemetryData := telemetry.CustomData{}

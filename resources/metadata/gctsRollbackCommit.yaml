@@ -2,7 +2,7 @@ metadata:
   name: gctsRollbackCommit
   description: Perfoms roll back of one (default) or several commit(s)
   longDescription: |
-    If called without a <commit> parameter gctsRollbackCommit will roll back 
+    If called without a <commit> parameter gctsRollbackCommit will roll back
     ONE commit.
 
 spec:

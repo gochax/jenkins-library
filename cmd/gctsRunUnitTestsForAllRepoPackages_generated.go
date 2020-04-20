@@ -35,7 +35,11 @@ func GctsRunUnitTestsForAllRepoPackagesCommand() *cobra.Command {
 			startTime = time.Now()
 			log.SetStepName("gctsRunUnitTestsForAllRepoPackages")
 			log.SetVerbose(GeneralConfig.Verbose)
-			return PrepareConfig(cmd, &metadata, "gctsRunUnitTestsForAllRepoPackages", &stepConfig, config.OpenPiperFile)
+			err := PrepareConfig(cmd, &metadata, "gctsRunUnitTestsForAllRepoPackages", &stepConfig, config.OpenPiperFile)
+			if err != nil {
+				return err
+			}
+			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			telemetryData := telemetry.CustomData{}
