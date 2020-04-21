@@ -44,12 +44,12 @@ func createRepository(config *gctsCreateRepositoryOptions, telemetryData *teleme
 	httpClient.SetOptions(clientOptions)
 
 	type repoData struct {
-		RID             string `json:"rid"`
-		Name            string `json:"name"`
-		Role            string `json:"role"`
-		Type            string `json:"type"`
-		VSID            string `json:"vsid"`
-		GithubURLstring string `json:"url"`
+		RID                 string `json:"rid"`
+		Name                string `json:"name"`
+		Role                string `json:"role"`
+		Type                string `json:"type"`
+		VSID                string `json:"vsid"`
+		RemoteRepositoryURL string `json:"url"`
 	}
 
 	type createRequestBody struct {
@@ -86,12 +86,12 @@ func createRepository(config *gctsCreateRepositoryOptions, telemetryData *teleme
 	reqBody := createRequestBody{
 		Repository: config.Repository,
 		Data: repoData{
-			RID:             config.Repository,
-			Name:            config.Repository,
-			Role:            config.Role,
-			Type:            config.Type,
-			VSID:            config.VSID,
-			GithubURLstring: config.RemoteRepositoryURL,
+			RID:                 config.Repository,
+			Name:                config.Repository,
+			Role:                config.Role,
+			Type:                config.Type,
+			VSID:                config.VSID,
+			RemoteRepositoryURL: config.RemoteRepositoryURL,
 		},
 	}
 	jsonBody, marshalErr := json.Marshal(reqBody)
