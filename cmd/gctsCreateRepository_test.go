@@ -14,7 +14,7 @@ import (
 func TestGctsCreateRepositorySuccess(t *testing.T) {
 
 	config := gctsCreateRepositoryOptions{
-		Host:                "testHost.wdf.sap.corp:50000",
+		Host:                "http://testHost.wdf.sap.corp:50000",
 		Client:              "000",
 		Repository:          "testRepo",
 		Username:            "testUser",
@@ -93,14 +93,12 @@ func TestGctsCreateRepositorySuccess(t *testing.T) {
 		err := createRepository(&config, nil, nil, &httpClient)
 
 		assert.NoError(t, err)
-
 	})
-
 }
 func TestGctsCreateRepositoryFailure(t *testing.T) {
 
 	config := gctsCreateRepositoryOptions{
-		Host:                "testHost.wdf.sap.corp:50000",
+		Host:                "http://testHost.wdf.sap.corp:50000",
 		Client:              "000",
 		Repository:          "testRepo",
 		Username:            "testUser",
@@ -110,7 +108,7 @@ func TestGctsCreateRepositoryFailure(t *testing.T) {
 		VSID:                "TST",
 	}
 
-	t.Run("creating repository locally failed", func(t *testing.T) {
+	t.Run("a http error occurred", func(t *testing.T) {
 
 		httpClient := httpMock{StatusCode: 500, ResponseBody: `{
 			"log": [
@@ -144,10 +142,8 @@ func TestGctsCreateRepositoryFailure(t *testing.T) {
 
 		err := createRepository(&config, nil, nil, &httpClient)
 
-		assert.EqualError(t, err, "creating the repository locally failed: a http error occurred")
-
+		assert.EqualError(t, err, "creating repository on the ABAP system http://testHost.wdf.sap.corp:50000 failed: a http error occurred")
 	})
-
 }
 
 type httpMock struct {

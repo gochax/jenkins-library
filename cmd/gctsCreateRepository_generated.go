@@ -25,7 +25,7 @@ type gctsCreateRepositoryOptions struct {
 	Type                string `json:"type,omitempty"`
 }
 
-// GctsCreateRepositoryCommand Creates a Git repository
+// GctsCreateRepositoryCommand Creates a Git repository on an ABAP system
 func GctsCreateRepositoryCommand() *cobra.Command {
 	metadata := gctsCreateRepositoryMetadata()
 	var stepConfig gctsCreateRepositoryOptions
@@ -33,8 +33,8 @@ func GctsCreateRepositoryCommand() *cobra.Command {
 
 	var createGctsCreateRepositoryCmd = &cobra.Command{
 		Use:   "gctsCreateRepository",
-		Short: "Creates a Git repository",
-		Long:  `Creates a local Git repository if it does not already exist.`,
+		Short: "Creates a Git repository on an ABAP system",
+		Long:  `Creates a local Git repository on an ABAP system if it does not already exist.`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			startTime = time.Now()
 			log.SetStepName("gctsCreateRepository")
@@ -65,15 +65,15 @@ func GctsCreateRepositoryCommand() *cobra.Command {
 }
 
 func addGctsCreateRepositoryFlags(cmd *cobra.Command, stepConfig *gctsCreateRepositoryOptions) {
-	cmd.Flags().StringVar(&stepConfig.Username, "username", os.Getenv("PIPER_username"), "User to authenticate to the ABAP system")
+	cmd.Flags().StringVar(&stepConfig.Username, "username", os.Getenv("PIPER_username"), "Username to authenticate to the ABAP system")
 	cmd.Flags().StringVar(&stepConfig.Password, "password", os.Getenv("PIPER_password"), "Password to authenticate to the ABAP system")
-	cmd.Flags().StringVar(&stepConfig.Repository, "repository", os.Getenv("PIPER_repository"), "Specifies the name (ID) of the repsitory to be cloned")
-	cmd.Flags().StringVar(&stepConfig.Host, "host", os.Getenv("PIPER_host"), "Specifies the host address of the ABAP system including the port")
+	cmd.Flags().StringVar(&stepConfig.Repository, "repository", os.Getenv("PIPER_repository"), "Specifies the name (ID) of the local repository")
+	cmd.Flags().StringVar(&stepConfig.Host, "host", os.Getenv("PIPER_host"), "Specifies the protocol and host adress, including the port. Please provide in the format '<protocol>://<host>:<port>'.")
 	cmd.Flags().StringVar(&stepConfig.Client, "client", os.Getenv("PIPER_client"), "Specifies the client of the ABAP system to be adressed")
 	cmd.Flags().StringVar(&stepConfig.RemoteRepositoryURL, "remoteRepositoryURL", os.Getenv("PIPER_remoteRepositoryURL"), "URL of the corresponding remote repository")
 	cmd.Flags().StringVar(&stepConfig.Role, "role", os.Getenv("PIPER_role"), "Role of the local repository. Choose between 'TARGET' and 'SOURCE'. Local repositories with a TARGET role will NOT be able to be the source of code changes.")
 	cmd.Flags().StringVar(&stepConfig.VSID, "vSID", os.Getenv("PIPER_vSID"), "Virtual SID of the local repository. The vSID corresponds to the transport route that delivers content to the remote Git repository.")
-	cmd.Flags().StringVar(&stepConfig.Type, "type", "GIT", "Type of the used source code management tool. So far, only Git is supported.")
+	cmd.Flags().StringVar(&stepConfig.Type, "type", "GIT", "Type of the used source code management tool.")
 
 	cmd.MarkFlagRequired("username")
 	cmd.MarkFlagRequired("password")
