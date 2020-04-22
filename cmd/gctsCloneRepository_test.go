@@ -1,15 +1,8 @@
 package cmd
 
 import (
-	"bytes"
-	"errors"
-	"io"
-	"io/ioutil"
-	"net/http"
-	"testing"
-
-	piperhttp "github.com/SAP/jenkins-library/pkg/http"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestGctsCloneRepositorySuccess(t *testing.T) {
