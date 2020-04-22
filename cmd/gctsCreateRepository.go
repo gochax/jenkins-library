@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 
+	gabs "github.com/Jeffail/gabs/v2"
 	"github.com/SAP/jenkins-library/pkg/command"
 	piperhttp "github.com/SAP/jenkins-library/pkg/http"
 	"github.com/SAP/jenkins-library/pkg/log"
@@ -57,32 +58,6 @@ func createRepository(config *gctsCreateRepositoryOptions, telemetryData *teleme
 		Data       repoData `json:"data"`
 	}
 
-	type repoConfig struct {
-		Key      string `json:"key"`
-		Value    string `json:"value"`
-		Category string `json:"category"`
-	}
-
-	type createResultBody struct {
-		RID         string       `json:"rid"`
-		Name        string       `json:"name"`
-		Role        string       `json:"role"`
-		Type        string       `json:"type"`
-		VSID        string       `json:"vsid"`
-		Status      string       `json:"status"`
-		Branch      string       `json:"branch"`
-		URL         string       `json:"url"`
-		CreatedBy   string       `json:"createdBy"`
-		CreatedDate string       `json:"createdDate"`
-		Connection  string       `json:"connection"`
-		Config      []repoConfig `json:"config"`
-	}
-
-	type createResponseBody struct {
-		Repository createResultBody `json:"repository"`
-		Exception  string           `json:"exception"`
-	}
-
 	reqBody := createRequestBody{
 		Repository: config.Repository,
 		Data: repoData{
@@ -97,15 +72,14 @@ func createRepository(config *gctsCreateRepositoryOptions, telemetryData *teleme
 	jsonBody, marshalErr := json.Marshal(reqBody)
 
 	if marshalErr != nil {
-		return fmt.Errorf("creating the repository locally failed: %w", marshalErr)
+		return fmt.Errorf("creating repository on the ABAP system %v failed: %w", config.Host, marshalErr)
 	}
 
 	header := make(http.Header)
 	header.Set("Content-Type", "application/json")
 	header.Add("Accept", "application/json")
 
-	url := "http://" + config.Host +
-		"/sap/bc/cts_abapvcs/repository?sap-client=" + config.Client
+	url := config.Host + "/sap/bc/cts_abapvcs/repository?sap-client=" + config.Client
 
 	resp, httpErr := httpClient.SendRequest("POST", url, bytes.NewBuffer(jsonBody), header, nil)
 
@@ -116,41 +90,36 @@ func createRepository(config *gctsCreateRepositoryOptions, telemetryData *teleme
 	}()
 
 	if resp == nil {
-		return fmt.Errorf("creating the repository locally failed: %w", httpErr)
+		return fmt.Errorf("creating repository on the ABAP system %v failed: %w", config.Host, httpErr)
 	}
 
-	var response createResponseBody
-	parsingErr := parseHTTPResponseBodyJSON(resp, &response)
+	bodyText, readErr := ioutil.ReadAll(resp.Body)
+
+	if readErr != nil {
+		return fmt.Errorf("creating repository on the ABAP system %v failed: %w", config.Host, readErr)
+	}
+
+	response, parsingErr := gabs.ParseJSON([]byte(bodyText))
 
 	if parsingErr != nil {
-		log.Entry().Warning(parsingErr)
+		return fmt.Errorf("creating repository on the ABAP system %v failed: %w", config.Host, parsingErr)
 	}
 
 	if httpErr != nil {
-		if resp.StatusCode == 500 && response.Exception == "Repository already exists" {
-			log.Entry().
-				WithField("repository", config.Repository).
-				Info("the repository already exists locally")
-			return nil
+		if resp.StatusCode == 500 {
+			if exception, ok := response.Path("exception").Data().(string); ok && exception == "Repository already exists" {
+				log.Entry().
+					WithField("repository", config.Repository).
+					Infof("the repository already exists on the ABAP system %v", config.Host)
+				return nil
+			}
 		}
-		return fmt.Errorf("creating the repository locally failed: %w", httpErr)
+		log.Entry().Errorf("a HTTP error occured! Response body: %v", response)
+		return fmt.Errorf("creating repository on the ABAP system %v failed: %w", config.Host, httpErr)
 	}
 
 	log.Entry().
 		WithField("repository", config.Repository).
-		Info("successfully created the local repository")
-	return nil
-}
-
-func parseHTTPResponseBodyJSON(resp *http.Response, response interface{}) error {
-	if resp == nil {
-		return fmt.Errorf("cannot parse HTTP response with value <nil>")
-	}
-	bodyText, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("could not read HTTP response body: %w", err)
-	}
-	json.Unmarshal(bodyText, &response)
-
+		Infof("successfully created the repository on ABAP system %v", config.Host)
 	return nil
 }

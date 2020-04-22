@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
 
@@ -114,4 +116,22 @@ type logs struct {
 	Severity string `json:"severity"`
 	Message  string `json:"message"`
 	Code     string `json:"code"`
+}
+
+func parseHTTPResponseBodyJSON(resp *http.Response, response interface{}) error {
+	if resp == nil {
+		return fmt.Errorf("cannot parse HTTP response with value <nil>")
+	}
+
+	bodyText, readErr := ioutil.ReadAll(resp.Body)
+	if readErr != nil {
+		return fmt.Errorf("cannot read HTTP response body: %w", readErr)
+	}
+
+	marshalErr := json.Unmarshal(bodyText, &response)
+	if marshalErr != nil {
+		return fmt.Errorf("cannot parse HTTP response as JSON: %w", marshalErr)
+	}
+
+	return nil
 }
