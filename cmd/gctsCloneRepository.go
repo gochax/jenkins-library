@@ -44,7 +44,7 @@ func cloneRepository(config *gctsCloneRepositoryOptions, telemetryData *telemetr
 
 	type cloneResultBody struct {
 		RID          string `json:"rid"`
-		CheckoutTime string `json:"checkoutTime"`
+		CheckoutTime int    `json:"checkoutTime"`
 		FromCommit   string `json:"fromCommit"`
 		ToCommit     string `json:"toCommit"`
 		Caller       string `json:"caller"`
@@ -105,11 +105,11 @@ func cloneRepository(config *gctsCloneRepositoryOptions, telemetryData *telemetr
 type exception struct {
 	Message     string `json:"message"`
 	Description string `json:"description"`
-	Code        string `json:"code"`
+	Code        int    `json:"code"`
 }
 
 type logs struct {
-	Time     string `json:"time"`
+	Time     int    `json:"time"`
 	User     string `json:"user"`
 	Section  string `json:"section"`
 	Action   string `json:"action"`
