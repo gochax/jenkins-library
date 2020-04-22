@@ -83,7 +83,7 @@ func cloneRepository(config *gctsCloneRepositoryOptions, telemetryData *telemetr
 	parsingErr := parseHTTPResponseBodyJSON(resp, &response)
 
 	if parsingErr != nil {
-		log.Entry().Warning(parsingErr)
+		return fmt.Errorf("creating repository on the ABAP system %v failed: %w", config.Host, parsingErr)
 	}
 
 	if httpErr != nil {
