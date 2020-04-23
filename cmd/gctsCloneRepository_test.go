@@ -8,7 +8,7 @@ import (
 func TestGctsCloneRepositorySuccess(t *testing.T) {
 
 	config := gctsCloneRepositoryOptions{
-		Host:       "testHost.wdf.sap.corp:50000",
+		Host:       "http://testHost.com:50000",
 		Client:     "000",
 		Repository: "testRepo",
 		Username:   "testUser",
@@ -19,7 +19,7 @@ func TestGctsCloneRepositorySuccess(t *testing.T) {
 
 		httpClient := httpMock{StatusCode: 200, ResponseBody: `{
 			"result": {
-				"rid": "com.sap.cts.example",
+				"rid": "my-repository",
 				"checkoutTime": 20180606130524,
 				"fromCommit": "f1cdb6a032c1d8187c0990b51e94e8d8bb9898b2",
 				"toCommit": "f1cdb6a032c1d8187c0990b51e94e8d8bb9898b2",
@@ -45,7 +45,7 @@ func TestGctsCloneRepositorySuccess(t *testing.T) {
 		if assert.NoError(t, err) {
 
 			t.Run("check url", func(t *testing.T) {
-				assert.Equal(t, "http://testHost.wdf.sap.corp:50000/sap/bc/cts_abapvcs/repository/testRepo/clone?sap-client=000", httpClient.URL)
+				assert.Equal(t, "http://testHost.com:50000/sap/bc/cts_abapvcs/repository/testRepo/clone?sap-client=000", httpClient.URL)
 			})
 
 			t.Run("check method", func(t *testing.T) {
@@ -134,7 +134,7 @@ func TestGctsCloneRepositorySuccess(t *testing.T) {
 func TestGctsCloneRepositoryFailure(t *testing.T) {
 
 	config := gctsCloneRepositoryOptions{
-		Host:       "testHost.wdf.sap.corp:50000",
+		Host:       "http://testHost.com:50000",
 		Client:     "000",
 		Repository: "testRepo",
 		Username:   "testUser",

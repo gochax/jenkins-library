@@ -10,7 +10,7 @@ import (
 func TestDiscoverySuccess(t *testing.T) {
 
 	config := gctsRunUnitTestsForAllRepoPackagesOptions{
-		Host:       "testHost.wdf.sap.corp:50000",
+		Host:       "http://testHost.com:50000",
 		Client:     "000",
 		Repository: "testRepo",
 		Username:   "testUser",
@@ -32,7 +32,7 @@ func TestDiscoverySuccess(t *testing.T) {
 		if assert.NoError(t, err) {
 
 			t.Run("check url", func(t *testing.T) {
-				assert.Equal(t, "http://testHost.wdf.sap.corp:50000/sap/bc/adt/core/discovery?sap-client=000", httpClient.URL)
+				assert.Equal(t, "http://testHost.com:50000/sap/bc/adt/core/discovery?sap-client=000", httpClient.URL)
 			})
 
 			t.Run("check method", func(t *testing.T) {
@@ -51,7 +51,7 @@ func TestDiscoverySuccess(t *testing.T) {
 func TestDiscoveryFailure(t *testing.T) {
 
 	config := gctsRunUnitTestsForAllRepoPackagesOptions{
-		Host:       "testHost.wdf.sap.corp:50000",
+		Host:       "http://testHost.com:50000",
 		Client:     "000",
 		Repository: "testRepo",
 		Username:   "testUser",
@@ -146,7 +146,7 @@ func TestDiscoveryFailure(t *testing.T) {
 func TestGetPackageListSuccess(t *testing.T) {
 
 	config := gctsRunUnitTestsForAllRepoPackagesOptions{
-		Host:       "testHost.wdf.sap.corp:50000",
+		Host:       "http://testHost.com:50000",
 		Client:     "000",
 		Repository: "testRepo",
 		Username:   "testUser",
@@ -185,7 +185,7 @@ func TestGetPackageListSuccess(t *testing.T) {
 		if assert.NoError(t, err) {
 
 			t.Run("check url", func(t *testing.T) {
-				assert.Equal(t, "http://testHost.wdf.sap.corp:50000/sap/bc/cts_abapvcs/repository/testRepo/getObjects?sap-client=000", httpClient.URL)
+				assert.Equal(t, "http://testHost.com:50000/sap/bc/cts_abapvcs/repository/testRepo/getObjects?sap-client=000", httpClient.URL)
 			})
 
 			t.Run("check method", func(t *testing.T) {
@@ -209,7 +209,7 @@ func TestGetPackageListSuccess(t *testing.T) {
 		if assert.NoError(t, err) {
 
 			t.Run("check url", func(t *testing.T) {
-				assert.Equal(t, "http://testHost.wdf.sap.corp:50000/sap/bc/cts_abapvcs/repository/testRepo/getObjects?sap-client=000", httpClient.URL)
+				assert.Equal(t, "http://testHost.com:50000/sap/bc/cts_abapvcs/repository/testRepo/getObjects?sap-client=000", httpClient.URL)
 			})
 
 			t.Run("check method", func(t *testing.T) {
@@ -227,7 +227,7 @@ func TestGetPackageListSuccess(t *testing.T) {
 func TestGetPackageListFailure(t *testing.T) {
 
 	config := gctsRunUnitTestsForAllRepoPackagesOptions{
-		Host:       "testHost.wdf.sap.corp:50000",
+		Host:       "http://testHost.com:50000",
 		Client:     "000",
 		Repository: "testRepo",
 		Username:   "testUser",
@@ -251,7 +251,7 @@ func TestGetPackageListFailure(t *testing.T) {
 func TestExecuteTestsForPackageSuccess(t *testing.T) {
 
 	config := gctsRunUnitTestsForAllRepoPackagesOptions{
-		Host:       "testHost.wdf.sap.corp:50000",
+		Host:       "http://testHost.com:50000",
 		Client:     "000",
 		Repository: "testRepo",
 		Username:   "testUser",
@@ -285,7 +285,7 @@ func TestExecuteTestsForPackageSuccess(t *testing.T) {
 		if assert.NoError(t, err) {
 
 			t.Run("check url", func(t *testing.T) {
-				assert.Equal(t, "http://testHost.wdf.sap.corp:50000/sap/bc/adt/abapunit/testruns?sap-client=000", httpClient.URL)
+				assert.Equal(t, "http://testHost.com:50000/sap/bc/adt/abapunit/testruns?sap-client=000", httpClient.URL)
 			})
 
 			t.Run("check method", func(t *testing.T) {
@@ -312,7 +312,7 @@ func TestExecuteTestsForPackageSuccess(t *testing.T) {
 		if assert.NoError(t, err) {
 
 			t.Run("check url", func(t *testing.T) {
-				assert.Equal(t, "http://testHost.wdf.sap.corp:50000/sap/bc/adt/abapunit/testruns?sap-client=000", httpClient.URL)
+				assert.Equal(t, "http://testHost.com:50000/sap/bc/adt/abapunit/testruns?sap-client=000", httpClient.URL)
 			})
 
 			t.Run("check method", func(t *testing.T) {
@@ -325,7 +325,7 @@ func TestExecuteTestsForPackageSuccess(t *testing.T) {
 func TestExecuteTestsForPackageFailure(t *testing.T) {
 
 	config := gctsRunUnitTestsForAllRepoPackagesOptions{
-		Host:       "testHost.wdf.sap.corp:50000",
+		Host:       "http://testHost.com:50000",
 		Client:     "000",
 		Repository: "testRepo",
 		Username:   "testUser",

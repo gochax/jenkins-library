@@ -1,13 +1,13 @@
 package cmd
 
 import (
-	"fmt"
 	"net/http/cookiejar"
 
 	"github.com/SAP/jenkins-library/pkg/command"
 	piperhttp "github.com/SAP/jenkins-library/pkg/http"
 	"github.com/SAP/jenkins-library/pkg/log"
 	"github.com/SAP/jenkins-library/pkg/telemetry"
+	"github.com/pkg/errors"
 )
 
 func gctsRollbackCommit(config gctsRollbackCommitOptions, telemetryData *telemetry.CustomData) {
@@ -33,7 +33,7 @@ func rollbackCommit(config *gctsRollbackCommitOptions, telemetryData *telemetry.
 
 	cookieJar, cookieErr := cookiejar.New(nil)
 	if cookieErr != nil {
-		return fmt.Errorf("rollback commit failed: %w", cookieErr)
+		return errors.Wrap(cookieErr, "rollback commit failed")
 	}
 	clientOptions := piperhttp.ClientOptions{
 		CookieJar: cookieJar,
@@ -72,7 +72,7 @@ func rollbackCommit(config *gctsRollbackCommitOptions, telemetryData *telemetry.
 	}()
 
 	if resp == nil || httpErr != nil {
-		return fmt.Errorf("rollback commit failed: %w", httpErr)
+		return errors.Wrap(httpErr, "rollback commit failed")
 	}
 
 	var response rollbackResponseBody
@@ -88,13 +88,13 @@ func rollbackCommit(config *gctsRollbackCommitOptions, telemetryData *telemetry.
 	} else if response.Result[0].FromCommit != "" {
 		deployParams = []string{"gctsDeployCommit", "--username", config.Username, "--password", config.Password, "--host", config.Host, "--client", config.Client, "--repository", config.Repository, "--commit", response.Result[0].FromCommit}
 	} else {
-		return fmt.Errorf("no commit to rollback to identified")
+		return errors.Errorf("no commit to rollback to identified")
 	}
 
 	deployErr := command.RunExecutable("./piper", deployParams...)
 
 	if deployErr != nil {
-		return fmt.Errorf("rollback commit failed: %w", deployErr)
+		return errors.Wrap(deployErr, "rollback commit failed")
 	}
 
 	log.Entry().

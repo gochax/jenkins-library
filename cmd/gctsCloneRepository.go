@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
@@ -11,6 +10,7 @@ import (
 	piperhttp "github.com/SAP/jenkins-library/pkg/http"
 	"github.com/SAP/jenkins-library/pkg/log"
 	"github.com/SAP/jenkins-library/pkg/telemetry"
+	"github.com/pkg/errors"
 )
 
 func gctsCloneRepository(config gctsCloneRepositoryOptions, telemetryData *telemetry.CustomData) {
@@ -36,7 +36,7 @@ func cloneRepository(config *gctsCloneRepositoryOptions, telemetryData *telemetr
 
 	cookieJar, cookieErr := cookiejar.New(nil)
 	if cookieErr != nil {
-		return fmt.Errorf("cloning the repository failed: %w", cookieErr)
+		return errors.Wrap(cookieErr, "cloning the repository failed")
 	}
 	clientOptions := piperhttp.ClientOptions{
 		CookieJar: cookieJar,
@@ -79,14 +79,14 @@ func cloneRepository(config *gctsCloneRepositoryOptions, telemetryData *telemetr
 	}()
 
 	if resp == nil {
-		return fmt.Errorf("cloning the repository failed: %w", httpErr)
+		return errors.Errorf("cloning the repository failed: %v", httpErr)
 	}
 
 	var response cloneResponseBody
 	parsingErr := parseHTTPResponseBodyJSON(resp, &response)
 
 	if parsingErr != nil {
-		return fmt.Errorf("creating repository on the ABAP system %v failed: %w", config.Host, parsingErr)
+		return errors.Wrap(parsingErr, "cloning the repository failed")
 	}
 
 	if httpErr != nil {
@@ -96,7 +96,7 @@ func cloneRepository(config *gctsCloneRepositoryOptions, telemetryData *telemetr
 				Info("the repository has already been cloned")
 			return nil
 		}
-		return fmt.Errorf("cloning the repository failed: %w", httpErr)
+		return errors.Wrap(httpErr, "cloning the repository failed")
 	}
 
 	log.Entry().
@@ -123,17 +123,17 @@ type logs struct {
 
 func parseHTTPResponseBodyJSON(resp *http.Response, response interface{}) error {
 	if resp == nil {
-		return fmt.Errorf("cannot parse HTTP response with value <nil>")
+		return errors.Errorf("cannot parse HTTP response with value <nil>")
 	}
 
 	bodyText, readErr := ioutil.ReadAll(resp.Body)
 	if readErr != nil {
-		return fmt.Errorf("cannot read HTTP response body: %w", readErr)
+		return errors.Wrap(readErr, "cannot read HTTP response body")
 	}
 
 	marshalErr := json.Unmarshal(bodyText, &response)
 	if marshalErr != nil {
-		return fmt.Errorf("cannot parse HTTP response as JSON: %w", marshalErr)
+		return errors.Wrap(marshalErr, "cannot parse HTTP response as JSON")
 	}
 
 	return nil

@@ -11,7 +11,7 @@ func TestGctsRollbackCommitSuccess(t *testing.T) {
 
 	execRunner := mock.ExecMockRunner{}
 	config := gctsRollbackCommitOptions{
-		Host:       "testHost.wdf.sap.corp:50000",
+		Host:       "http://testHost.com:50000",
 		Client:     "000",
 		Repository: "testRepo",
 		Username:   "testUser",
@@ -23,7 +23,7 @@ func TestGctsRollbackCommitSuccess(t *testing.T) {
 		httpClient := httpMock{StatusCode: 200, ResponseBody: `{
 			"result": [
 				{
-					"rid": "com.sap.cts.example",
+					"rid": "my-repository",
 					"checkoutTime": 20180606130524,
 					"fromCommit": "f1cdb6a032c1d8187c0990b51e94e8d8bb9898b2",
 					"toCommit": "7763c593906d3cb92e264733b620df9c27f2e1b8",
@@ -39,7 +39,7 @@ func TestGctsRollbackCommitSuccess(t *testing.T) {
 		if assert.NoError(t, err) {
 
 			t.Run("check url", func(t *testing.T) {
-				assert.Equal(t, "http://testHost.wdf.sap.corp:50000/sap/bc/cts_abapvcs/repository/testRepo/getHistory?sap-client=000", httpClient.URL)
+				assert.Equal(t, "http://testHost.com:50000/sap/bc/cts_abapvcs/repository/testRepo/getHistory?sap-client=000", httpClient.URL)
 			})
 
 			t.Run("check method", func(t *testing.T) {
@@ -59,7 +59,7 @@ func TestGctsRollbackCommitSuccess(t *testing.T) {
 			})
 
 			t.Run("check CLI call parameters", func(t *testing.T) {
-				assert.Equal(t, []string{"gctsDeployCommit", "--username", "testUser", "--password", "testPassword", "--host", "testHost.wdf.sap.corp:50000", "--client", "000", "--repository", "testRepo", "--commit", "f1cdb6a032c1d8187c0990b51e94e8d8bb9898b2"}, execRunner.Calls[0].Params)
+				assert.Equal(t, []string{"gctsDeployCommit", "--username", "testUser", "--password", "testPassword", "--host", "http://testHost.com:50000", "--client", "000", "--repository", "testRepo", "--commit", "f1cdb6a032c1d8187c0990b51e94e8d8bb9898b2"}, execRunner.Calls[0].Params)
 			})
 
 		}
@@ -70,7 +70,7 @@ func TestGctsRollbackToGivenCommitSuccess(t *testing.T) {
 
 	execRunner := mock.ExecMockRunner{}
 	config := gctsRollbackCommitOptions{
-		Host:       "testHost.wdf.sap.corp:50000",
+		Host:       "http://testHost.com:50000",
 		Client:     "000",
 		Repository: "testRepo",
 		Username:   "testUser",
@@ -83,7 +83,7 @@ func TestGctsRollbackToGivenCommitSuccess(t *testing.T) {
 		httpClient := httpMock{StatusCode: 200, ResponseBody: `{
 				"result": [
 					{
-						"rid": "com.sap.cts.example",
+						"rid": "my-repository",
 						"checkoutTime": 20180606130524,
 						"fromCommit": "f1cdb6a032c1d8187c0990b51e94e8d8bb9898b2",
 						"toCommit": "7763c593906d3cb92e264733b620df9c27f2e1b8",
@@ -103,7 +103,7 @@ func TestGctsRollbackToGivenCommitSuccess(t *testing.T) {
 			})
 
 			t.Run("check CLI call parameters", func(t *testing.T) {
-				assert.Equal(t, []string{"gctsDeployCommit", "--username", "testUser", "--password", "testPassword", "--host", "testHost.wdf.sap.corp:50000", "--client", "000", "--repository", "testRepo", "--commit", "8aeebd1a125d5d27499bd30699f4db2e79f51ee7"}, execRunner.Calls[0].Params)
+				assert.Equal(t, []string{"gctsDeployCommit", "--username", "testUser", "--password", "testPassword", "--host", "http://testHost.com:50000", "--client", "000", "--repository", "testRepo", "--commit", "8aeebd1a125d5d27499bd30699f4db2e79f51ee7"}, execRunner.Calls[0].Params)
 			})
 
 		}
@@ -115,7 +115,7 @@ func TestGctsRollbackCommitFailure(t *testing.T) {
 
 	execRunner := mock.ExecMockRunner{}
 	config := gctsRollbackCommitOptions{
-		Host:       "testHost.wdf.sap.corp:50000",
+		Host:       "http://testHost.com:50000",
 		Client:     "000",
 		Repository: "testRepo",
 		Username:   "testUser",
@@ -127,7 +127,7 @@ func TestGctsRollbackCommitFailure(t *testing.T) {
 		httpClient := httpMock{StatusCode: 200, ResponseBody: `{
 			"result": [
 				{
-					"rid": "com.sap.cts.example",
+					"rid": "my-repository",
 					"checkoutTime": 20180606130524,
 					"toCommit": "7763c593906d3cb92e264733b620df9c27f2e1b8",
 					"caller": "JOHNDOE",

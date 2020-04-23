@@ -1,13 +1,13 @@
 package cmd
 
 import (
-	"fmt"
 	"net/http/cookiejar"
 
 	"github.com/SAP/jenkins-library/pkg/command"
 	piperhttp "github.com/SAP/jenkins-library/pkg/http"
 	"github.com/SAP/jenkins-library/pkg/log"
 	"github.com/SAP/jenkins-library/pkg/telemetry"
+	"github.com/pkg/errors"
 )
 
 func gctsDeployCommit(config gctsDeployCommitOptions, telemetryData *telemetry.CustomData) {
@@ -33,7 +33,7 @@ func deployCommit(config *gctsDeployCommitOptions, telemetryData *telemetry.Cust
 
 	cookieJar, cookieErr := cookiejar.New(nil)
 	if cookieErr != nil {
-		return fmt.Errorf("deploy commit failed: %w", cookieErr)
+		return errors.Wrap(cookieErr, "deploy commit failed")
 	}
 	clientOptions := piperhttp.ClientOptions{
 		CookieJar: cookieJar,
@@ -67,7 +67,7 @@ func deployCommit(config *gctsDeployCommitOptions, telemetryData *telemetry.Cust
 	}()
 
 	if resp == nil || httpErr != nil {
-		return fmt.Errorf("deploy commit failed: %w", httpErr)
+		return errors.Errorf("deploy commit failed: %v", httpErr)
 	}
 
 	var response deployResponseBody

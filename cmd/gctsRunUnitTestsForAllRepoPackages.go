@@ -3,7 +3,6 @@ package cmd
 import (
 	"bytes"
 	"encoding/xml"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
@@ -12,6 +11,7 @@ import (
 	piperhttp "github.com/SAP/jenkins-library/pkg/http"
 	"github.com/SAP/jenkins-library/pkg/log"
 	"github.com/SAP/jenkins-library/pkg/telemetry"
+	"github.com/pkg/errors"
 )
 
 func gctsRunUnitTestsForAllRepoPackages(config gctsRunUnitTestsForAllRepoPackagesOptions, telemetryData *telemetry.CustomData) {
@@ -37,7 +37,7 @@ func runUnitTestsForAllRepoPackages(config *gctsRunUnitTestsForAllRepoPackagesOp
 
 	cookieJar, cookieErr := cookiejar.New(nil)
 	if cookieErr != nil {
-		return fmt.Errorf("execution of unit tests failed: %w", cookieErr)
+		return errors.Wrap(cookieErr, "execution of unit tests failed")
 	}
 	clientOptions := piperhttp.ClientOptions{
 		CookieJar: cookieJar,
@@ -49,17 +49,17 @@ func runUnitTestsForAllRepoPackages(config *gctsRunUnitTestsForAllRepoPackagesOp
 	repoObjects, getPackageErr := getPackageList(config, telemetryData, httpClient)
 
 	if getPackageErr != nil {
-		return fmt.Errorf("%w", getPackageErr)
+		return errors.Wrap(getPackageErr, "execution of unit tests failed")
 	}
 
 	discHeader, discError := discoverServer(config, telemetryData, httpClient)
 
 	if discError != nil {
-		return fmt.Errorf("%w", discError)
+		return errors.Wrap(discError, "execution of unit tests failed")
 	}
 
 	if discHeader.Get("X-Csrf-Token") == "" {
-		return fmt.Errorf("could not retrieve x-csrf-token from server")
+		return errors.Errorf("could not retrieve x-csrf-token from server")
 	}
 
 	header := make(http.Header)
@@ -71,7 +71,7 @@ func runUnitTestsForAllRepoPackages(config *gctsRunUnitTestsForAllRepoPackagesOp
 		executeTestsErr := executeTestsForPackage(config, telemetryData, httpClient, header, object)
 
 		if executeTestsErr != nil {
-			return fmt.Errorf("%w", executeTestsErr)
+			return errors.Wrap(executeTestsErr, "execution of unit tests failed")
 		}
 	}
 
@@ -101,9 +101,9 @@ func discoverServer(config *gctsRunUnitTestsForAllRepoPackagesOptions, telemetry
 
 	if disc == nil || disc.Header == nil || httpErr != nil {
 		if httpErr != nil {
-			return nil, fmt.Errorf("discovery of the ABAP server failed: %v", httpErr)
+			return nil, errors.Errorf("discovery of the ABAP server failed: %v", httpErr)
 		}
-		return nil, fmt.Errorf("discovery of the ABAP server failed: http response or header are <nil>")
+		return nil, errors.Errorf("discovery of the ABAP server failed: http response or header are <nil>")
 	}
 
 	return &disc.Header, nil
@@ -145,7 +145,7 @@ func executeTestsForPackage(config *gctsRunUnitTestsForAllRepoPackagesOptions, t
 	}()
 
 	if resp == nil || httpErr != nil {
-		return fmt.Errorf("execution of unit tests failed: %w", httpErr)
+		return errors.Errorf("execution of unit tests failed: %v", httpErr)
 	}
 
 	var response runResult
@@ -156,7 +156,7 @@ func executeTestsForPackage(config *gctsRunUnitTestsForAllRepoPackagesOptions, t
 
 	aunitError := parseAUnitResponse(&response)
 	if aunitError != nil {
-		return fmt.Errorf("%w", aunitError)
+		return aunitError
 	}
 
 	return nil
@@ -182,7 +182,7 @@ func parseAUnitResponse(response *runResult) error {
 		}
 	}
 	if aunitError {
-		return fmt.Errorf("some unit tests failed")
+		return errors.Errorf("some unit tests failed")
 	}
 	return nil
 }
@@ -216,13 +216,13 @@ func getPackageList(config *gctsRunUnitTestsForAllRepoPackagesOptions, telemetry
 	}()
 
 	if resp == nil || httpErr != nil {
-		return []string{}, fmt.Errorf("failed to get repository objects: %v", httpErr)
+		return []string{}, errors.Errorf("failed to get repository objects: %v", httpErr)
 	}
 
 	var response objectsResponseBody
 	parsingErr := parseHTTPResponseBodyJSON(resp, &response)
 	if parsingErr != nil {
-		return []string{}, fmt.Errorf("%v", parsingErr)
+		return []string{}, errors.Errorf("%v", parsingErr)
 	}
 
 	repoObjects := []string{}
@@ -237,13 +237,18 @@ func getPackageList(config *gctsRunUnitTestsForAllRepoPackagesOptions, telemetry
 
 func parseHTTPResponseBodyXML(resp *http.Response, response interface{}) error {
 	if resp == nil {
-		return fmt.Errorf("cannot parse HTTP response with value <nil>")
+		return errors.Errorf("cannot parse HTTP response with value <nil>")
 	}
-	bodyText, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("could not read HTTP response body: %w", err)
+
+	bodyText, readErr := ioutil.ReadAll(resp.Body)
+	if readErr != nil {
+		return errors.Wrap(readErr, "could not read HTTP response body")
 	}
-	xml.Unmarshal(bodyText, &response)
+
+	marshalErr := xml.Unmarshal(bodyText, &response)
+	if marshalErr != nil {
+		return errors.Wrap(marshalErr, "cannot parse HTTP response as JSON")
+	}
 
 	return nil
 }

@@ -8,7 +8,7 @@ import (
 func TestGctsDeployCommitSuccess(t *testing.T) {
 
 	config := gctsDeployCommitOptions{
-		Host:       "testHost.wdf.sap.corp:50000",
+		Host:       "http://testHost.com:50000",
 		Client:     "000",
 		Repository: "testRepo",
 		Username:   "testUser",
@@ -39,7 +39,7 @@ func TestGctsDeployCommitSuccess(t *testing.T) {
 		if assert.NoError(t, err) {
 
 			t.Run("check url", func(t *testing.T) {
-				assert.Equal(t, "http://testHost.wdf.sap.corp:50000/sap/bc/cts_abapvcs/repository/testRepo/pullByCommit?sap-client=000", httpClient.URL)
+				assert.Equal(t, "http://testHost.com:50000/sap/bc/cts_abapvcs/repository/testRepo/pullByCommit?sap-client=000", httpClient.URL)
 			})
 
 			t.Run("check method", func(t *testing.T) {
@@ -62,7 +62,7 @@ func TestGctsDeployCommitSuccess(t *testing.T) {
 func TestGctsDeployCommitFailure(t *testing.T) {
 
 	config := gctsDeployCommitOptions{
-		Host:       "testHost.wdf.sap.corp:50000",
+		Host:       "http://testHost.com:50000",
 		Client:     "000",
 		Repository: "testRepo",
 		Username:   "testUser",
