@@ -56,7 +56,7 @@ func rollbackCommit(config *gctsRollbackCommitOptions, telemetryData *telemetry.
 		ErrorLogs []logs               `json:"errorLog"`
 	}
 
-	url := "http://" + config.Host +
+	url := config.Host +
 		"/sap/bc/cts_abapvcs/repository/" + config.Repository +
 		"/getHistory?sap-client=" + config.Client
 

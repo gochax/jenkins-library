@@ -2,13 +2,13 @@ metadata:
   name: gctsRunUnitTestsForAllRepoPackages
   description: Runs all existing unit tests for the repository packages
   longDescription: |
-    Will execute every unit test associated with a package belonging to the specified repository.
+    Will execute every unit test associated with a package belonging to the specified local repository on an ABAP system.
 
 spec:
   inputs:
     secrets:
       - name: ABAPCredentialsId
-        description: Jenkins credentials ID containing user and password to authenticate to the ABAP system you want to clone the repository to
+        description: Jenkins credentials ID containing username and password for authentication to the ABAP system on which you want to perform the unit tests
         type: jenkins
     params:
       - name: username
@@ -29,7 +29,7 @@ spec:
         mandatory: true
       - name: repository
         type: string
-        description: Specifies the name (ID) of the repsitory to be cloned
+        description: Specifies the name (ID) of the local repsitory on the ABAP system
         scope:
         - PARAMETERS
         - STAGES
@@ -37,7 +37,7 @@ spec:
         mandatory: true
       - name: host
         type: string
-        description: Specifies the host address of the ABAP system including the port
+        description: Specifies the protocol and host adress, including the port. Please provide in the format '<protocol>://<host>:<port>'
         scope:
         - PARAMETERS
         - STAGES

@@ -80,7 +80,7 @@ func runUnitTestsForAllRepoPackages(config *gctsRunUnitTestsForAllRepoPackagesOp
 
 func discoverServer(config *gctsRunUnitTestsForAllRepoPackagesOptions, telemetryData *telemetry.CustomData, client piperhttp.Sender) (*http.Header, error) {
 
-	url := "http://" + config.Host +
+	url := config.Host +
 		"/sap/bc/adt/core/discovery?sap-client=" + config.Client
 
 	header := make(http.Header)
@@ -130,7 +130,7 @@ func executeTestsForPackage(config *gctsRunUnitTestsForAllRepoPackagesOptions, t
 			</adtcore:objectSets>
 	</aunit:runConfiguration>`)
 
-	url := "http://" + config.Host +
+	url := config.Host +
 		"/sap/bc/adt/abapunit/testruns?sap-client=" + config.Client
 
 	resp, httpErr := client.SendRequest("POST", url, bytes.NewBuffer(xmlBody), header, nil)
@@ -200,7 +200,7 @@ func getPackageList(config *gctsRunUnitTestsForAllRepoPackagesOptions, telemetry
 		ErrorLogs []logs    `json:"errorLog"`
 	}
 
-	url := "http://" + config.Host +
+	url := config.Host +
 		"/sap/bc/cts_abapvcs/repository/" + config.Repository +
 		"/getObjects?sap-client=" + config.Client
 

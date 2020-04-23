@@ -48,7 +48,7 @@ func deployCommit(config *gctsDeployCommitOptions, telemetryData *telemetry.Cust
 		ErrorLogs  []logs    `json:"errorLog"`
 	}
 
-	url := "http://" + config.Host +
+	url := config.Host +
 		"/sap/bc/cts_abapvcs/repository/" + config.Repository +
 		"/pullByCommit?sap-client=" + config.Client
 	if config.Commit != "" {

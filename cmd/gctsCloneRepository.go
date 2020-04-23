@@ -63,7 +63,7 @@ func cloneRepository(config *gctsCloneRepositoryOptions, telemetryData *telemetr
 	header.Set("Content-Type", "application/json")
 	header.Add("Accept", "application/json")
 
-	url := "http://" + config.Host +
+	url := config.Host +
 		"/sap/bc/cts_abapvcs/repository/" + config.Repository +
 		"/clone?sap-client=" + config.Client
 
