@@ -31,7 +31,10 @@ func gctsDeployCommit(config gctsDeployCommitOptions, telemetryData *telemetry.C
 
 func deployCommit(config *gctsDeployCommitOptions, telemetryData *telemetry.CustomData, command execRunner, httpClient piperhttp.Sender) error {
 
-	cookieJar, _ := cookiejar.New(nil)
+	cookieJar, cookieErr := cookiejar.New(nil)
+	if cookieErr != nil {
+		return fmt.Errorf("deploy commit failed: %w", cookieErr)
+	}
 	clientOptions := piperhttp.ClientOptions{
 		CookieJar: cookieJar,
 		Username:  config.Username,

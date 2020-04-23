@@ -34,7 +34,10 @@ func gctsCloneRepository(config gctsCloneRepositoryOptions, telemetryData *telem
 
 func cloneRepository(config *gctsCloneRepositoryOptions, telemetryData *telemetry.CustomData, command execRunner, httpClient piperhttp.Sender) error {
 
-	cookieJar, _ := cookiejar.New(nil)
+	cookieJar, cookieErr := cookiejar.New(nil)
+	if cookieErr != nil {
+		return fmt.Errorf("cloning the repository failed: %w", cookieErr)
+	}
 	clientOptions := piperhttp.ClientOptions{
 		CookieJar: cookieJar,
 		Username:  config.Username,

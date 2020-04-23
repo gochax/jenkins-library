@@ -36,7 +36,10 @@ func gctsCreateRepository(config gctsCreateRepositoryOptions, telemetryData *tel
 
 func createRepository(config *gctsCreateRepositoryOptions, telemetryData *telemetry.CustomData, command execRunner, httpClient piperhttp.Sender) error {
 
-	cookieJar, _ := cookiejar.New(nil)
+	cookieJar, cookieErr := cookiejar.New(nil)
+	if cookieErr != nil {
+		return fmt.Errorf("creating repository on the ABAP system %v failed: %w", config.Host, cookieErr)
+	}
 	clientOptions := piperhttp.ClientOptions{
 		CookieJar: cookieJar,
 		Username:  config.Username,

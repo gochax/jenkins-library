@@ -31,7 +31,10 @@ func gctsRollbackCommit(config gctsRollbackCommitOptions, telemetryData *telemet
 
 func rollbackCommit(config *gctsRollbackCommitOptions, telemetryData *telemetry.CustomData, command execRunner, httpClient piperhttp.Sender) error {
 
-	cookieJar, _ := cookiejar.New(nil)
+	cookieJar, cookieErr := cookiejar.New(nil)
+	if cookieErr != nil {
+		return fmt.Errorf("rollback commit failed: %w", cookieErr)
+	}
 	clientOptions := piperhttp.ClientOptions{
 		CookieJar: cookieJar,
 		Username:  config.Username,
