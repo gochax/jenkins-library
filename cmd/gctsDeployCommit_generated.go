@@ -31,7 +31,7 @@ func GctsDeployCommitCommand() *cobra.Command {
 	var createGctsDeployCommitCmd = &cobra.Command{
 		Use:   "gctsDeployCommit",
 		Short: "Pulls a commit from the remote Git repository to a local repository",
-		Long:  `Pulls a commit from the remote Git repository to a local repository.`,
+		Long:  `Pulls a commit from the corresponding remote Git repository to a specified local repository on an ABAP system. If no <commit> parameter is specified, this step will pull the latest commit available on the remote repository.`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			startTime = time.Now()
 			log.SetStepName("gctsDeployCommit")
@@ -64,10 +64,10 @@ func GctsDeployCommitCommand() *cobra.Command {
 func addGctsDeployCommitFlags(cmd *cobra.Command, stepConfig *gctsDeployCommitOptions) {
 	cmd.Flags().StringVar(&stepConfig.Username, "username", os.Getenv("PIPER_username"), "User to authenticate to the ABAP system")
 	cmd.Flags().StringVar(&stepConfig.Password, "password", os.Getenv("PIPER_password"), "Password to authenticate to the ABAP system")
-	cmd.Flags().StringVar(&stepConfig.Repository, "repository", os.Getenv("PIPER_repository"), "Specifies the name (ID) of the repsitory to be cloned")
-	cmd.Flags().StringVar(&stepConfig.Host, "host", os.Getenv("PIPER_host"), "Specifies the host address of the ABAP system including the port")
+	cmd.Flags().StringVar(&stepConfig.Repository, "repository", os.Getenv("PIPER_repository"), "Specifies the name (ID) of the local repsitory on the ABAP system")
+	cmd.Flags().StringVar(&stepConfig.Host, "host", os.Getenv("PIPER_host"), "Specifies the protocol and host adress, including the port. Please provide in the format '<protocol>://<host>:<port>'")
 	cmd.Flags().StringVar(&stepConfig.Client, "client", os.Getenv("PIPER_client"), "Specifies the client of the ABAP system to be adressed")
-	cmd.Flags().StringVar(&stepConfig.Commit, "commit", os.Getenv("PIPER_commit"), "Specifies the commit to deploy")
+	cmd.Flags().StringVar(&stepConfig.Commit, "commit", os.Getenv("PIPER_commit"), "Specifies the commit to be deployed")
 
 	cmd.MarkFlagRequired("username")
 	cmd.MarkFlagRequired("password")

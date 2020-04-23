@@ -31,8 +31,7 @@ func GctsRollbackCommitCommand() *cobra.Command {
 	var createGctsRollbackCommitCmd = &cobra.Command{
 		Use:   "gctsRollbackCommit",
 		Short: "Perfoms roll back of one (default) or several commit(s)",
-		Long: `If called without a <commit> parameter gctsRollbackCommit will roll back
-ONE commit.`,
+		Long:  `This step performs a rollback of commit(s) in a local ABAP system repository. If called without a <commit> parameter gctsRollbackCommit will roll back ONE commit.`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			startTime = time.Now()
 			log.SetStepName("gctsRollbackCommit")
@@ -65,8 +64,8 @@ ONE commit.`,
 func addGctsRollbackCommitFlags(cmd *cobra.Command, stepConfig *gctsRollbackCommitOptions) {
 	cmd.Flags().StringVar(&stepConfig.Username, "username", os.Getenv("PIPER_username"), "User to authenticate to the ABAP system")
 	cmd.Flags().StringVar(&stepConfig.Password, "password", os.Getenv("PIPER_password"), "Password to authenticate to the ABAP system")
-	cmd.Flags().StringVar(&stepConfig.Repository, "repository", os.Getenv("PIPER_repository"), "Specifies the name (ID) of the repsitory to be cloned")
-	cmd.Flags().StringVar(&stepConfig.Host, "host", os.Getenv("PIPER_host"), "Specifies the host address of the ABAP system including the port")
+	cmd.Flags().StringVar(&stepConfig.Repository, "repository", os.Getenv("PIPER_repository"), "Specifies the name (ID) of the local repsitory on the ABAP system")
+	cmd.Flags().StringVar(&stepConfig.Host, "host", os.Getenv("PIPER_host"), "Specifies the protocol and host adress, including the port. Please provide in the format '<protocol>://<host>:<port>'")
 	cmd.Flags().StringVar(&stepConfig.Client, "client", os.Getenv("PIPER_client"), "Specifies the client of the ABAP system to be adressed")
 	cmd.Flags().StringVar(&stepConfig.Commit, "commit", os.Getenv("PIPER_commit"), "Specifies the commit to deploy")
 
