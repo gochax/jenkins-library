@@ -17,7 +17,7 @@ func TestGctsDeployCommitSuccess(t *testing.T) {
 
 	t.Run("deploy latest commit", func(t *testing.T) {
 
-		httpClient := httpMock{StatusCode: 200, ResponseBody: `{
+		httpClient := httpMockGcts{StatusCode: 200, ResponseBody: `{
 			"trkorr": "SIDK1234567",
 			"fromCommit": "f1cdb6a032c1d8187c0990b51e94e8d8bb9898b2",
 			"toCommit": "f1cdb6a032c1d8187c0990b51e94e8d8bb9898b2",
@@ -71,7 +71,7 @@ func TestGctsDeployCommitFailure(t *testing.T) {
 
 	t.Run("http error occurred", func(t *testing.T) {
 
-		httpClient := httpMock{StatusCode: 500, ResponseBody: `{
+		httpClient := httpMockGcts{StatusCode: 500, ResponseBody: `{
 			"log": [
 				{
 					"time": 20180606130524,

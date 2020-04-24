@@ -20,7 +20,7 @@ func TestGctsRollbackCommitSuccess(t *testing.T) {
 
 	t.Run("rollback one commit by commit history", func(t *testing.T) {
 
-		httpClient := httpMock{StatusCode: 200, ResponseBody: `{
+		httpClient := httpMockGcts{StatusCode: 200, ResponseBody: `{
 			"result": [
 				{
 					"rid": "my-repository",
@@ -80,7 +80,7 @@ func TestGctsRollbackToGivenCommitSuccess(t *testing.T) {
 
 	t.Run("rollback to given commit", func(t *testing.T) {
 
-		httpClient := httpMock{StatusCode: 200, ResponseBody: `{
+		httpClient := httpMockGcts{StatusCode: 200, ResponseBody: `{
 				"result": [
 					{
 						"rid": "my-repository",
@@ -124,7 +124,7 @@ func TestGctsRollbackCommitFailure(t *testing.T) {
 
 	t.Run("no commit history & no specified commit", func(t *testing.T) {
 
-		httpClient := httpMock{StatusCode: 200, ResponseBody: `{
+		httpClient := httpMockGcts{StatusCode: 200, ResponseBody: `{
 			"result": [
 				{
 					"rid": "my-repository",
@@ -144,7 +144,7 @@ func TestGctsRollbackCommitFailure(t *testing.T) {
 
 	t.Run("http error when getting commit history", func(t *testing.T) {
 
-		httpClient := httpMock{StatusCode: 500, ResponseBody: `{
+		httpClient := httpMockGcts{StatusCode: 500, ResponseBody: `{
 			"log": [
 				{
 					"time": 20180606130524,

@@ -19,7 +19,7 @@ func TestDiscoverySuccess(t *testing.T) {
 
 	t.Run("discovery successfull", func(t *testing.T) {
 
-		httpClient := httpMock{
+		httpClient := httpMockGcts{
 			StatusCode: 200,
 			Header:     map[string][]string{"x-csrf-token": []string{"ZegUEgfa50R7ZfGGxOtx2A=="}},
 			ResponseBody: `
@@ -60,7 +60,7 @@ func TestDiscoveryFailure(t *testing.T) {
 
 	t.Run("a http error occurred", func(t *testing.T) {
 
-		httpClient := httpMock{StatusCode: 403, ResponseBody: `
+		httpClient := httpMockGcts{StatusCode: 403, ResponseBody: `
 		<html>
 		<head>
 			<meta http-equiv="content-type" content="text/html; charset=windows-1252">
@@ -106,7 +106,7 @@ func TestDiscoveryFailure(t *testing.T) {
 
 	t.Run("discovery response is nil", func(t *testing.T) {
 
-		httpClient := httpMock{StatusCode: 200, ResponseBody: ``}
+		httpClient := httpMockGcts{StatusCode: 200, ResponseBody: ``}
 
 		header, err := discoverServer(&config, nil, &httpClient)
 
@@ -122,7 +122,7 @@ func TestDiscoveryFailure(t *testing.T) {
 
 	t.Run("discovery header is nil", func(t *testing.T) {
 
-		httpClient := httpMock{
+		httpClient := httpMockGcts{
 			StatusCode: 200,
 			Header:     nil,
 			ResponseBody: `
@@ -155,7 +155,7 @@ func TestGetPackageListSuccess(t *testing.T) {
 
 	t.Run("return multiple objects sucessfully", func(t *testing.T) {
 
-		httpClient := httpMock{StatusCode: 200, ResponseBody: `
+		httpClient := httpMockGcts{StatusCode: 200, ResponseBody: `
 		{
 			"objects": [
 				{
@@ -202,7 +202,7 @@ func TestGetPackageListSuccess(t *testing.T) {
 
 	t.Run("no objects returned by http call", func(t *testing.T) {
 
-		httpClient := httpMock{StatusCode: 200, ResponseBody: `{}`}
+		httpClient := httpMockGcts{StatusCode: 200, ResponseBody: `{}`}
 
 		objects, err := getPackageList(&config, nil, &httpClient)
 
@@ -236,7 +236,7 @@ func TestGetPackageListFailure(t *testing.T) {
 
 	t.Run("http error occured", func(t *testing.T) {
 
-		httpClient := httpMock{StatusCode: 500, ResponseBody: `
+		httpClient := httpMockGcts{StatusCode: 500, ResponseBody: `
 		{
 			"exception": "No relation between system and repository"
 		}
@@ -265,7 +265,7 @@ func TestExecuteTestsForPackageSuccess(t *testing.T) {
 
 	t.Run("all unit tests were successfull", func(t *testing.T) {
 
-		httpClient := httpMock{StatusCode: 200, ResponseBody: `
+		httpClient := httpMockGcts{StatusCode: 200, ResponseBody: `
 		<?xml version="1.0" encoding="utf-8"?>
 		<aunit:runResult xmlns:aunit="http://www.sap.com/adt/aunit">
 				<program adtcore:uri="/sap/bc/adt/oo/classes/zcl_gcts_piper_demo" adtcore:type="CLAS/OC" adtcore:name="ZCL_GCTS_PIPER_DEMO" uriType="semantic" xmlns:adtcore="http://www.sap.com/adt/core">
@@ -296,7 +296,7 @@ func TestExecuteTestsForPackageSuccess(t *testing.T) {
 
 	t.Run("no unit tests found", func(t *testing.T) {
 
-		httpClient := httpMock{StatusCode: 200, ResponseBody: `
+		httpClient := httpMockGcts{StatusCode: 200, ResponseBody: `
 		<?xml version="1.0" encoding="utf-8"?>
 		<aunit:runResult xmlns:aunit="http://www.sap.com/adt/aunit">
 				<alerts>
@@ -334,7 +334,7 @@ func TestExecuteTestsForPackageFailure(t *testing.T) {
 
 	t.Run("some unit tests failed", func(t *testing.T) {
 
-		httpClient := httpMock{StatusCode: 200, ResponseBody: `
+		httpClient := httpMockGcts{StatusCode: 200, ResponseBody: `
 		<?xml version="1.0" encoding="utf-8"?>
 		<aunit:runResult xmlns:aunit="http://www.sap.com/adt/aunit">
 				<program adtcore:uri="/sap/bc/adt/oo/classes/zcl_gcts_piper_demo" adtcore:type="CLAS/OC" adtcore:name="ZCL_GCTS_PIPER_DEMO" uriType="semantic" xmlns:adtcore="http://www.sap.com/adt/core">
@@ -378,7 +378,7 @@ func TestExecuteTestsForPackageFailure(t *testing.T) {
 
 	t.Run("a http error occurred", func(t *testing.T) {
 
-		httpClient := httpMock{StatusCode: 403, ResponseBody: `
+		httpClient := httpMockGcts{StatusCode: 403, ResponseBody: `
 		CSRF token validation failed
 		`}
 

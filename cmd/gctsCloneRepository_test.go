@@ -17,7 +17,7 @@ func TestGctsCloneRepositorySuccess(t *testing.T) {
 
 	t.Run("cloning successfull", func(t *testing.T) {
 
-		httpClient := httpMock{StatusCode: 200, ResponseBody: `{
+		httpClient := httpMockGcts{StatusCode: 200, ResponseBody: `{
 			"result": {
 				"rid": "my-repository",
 				"checkoutTime": 20180606130524,
@@ -66,7 +66,7 @@ func TestGctsCloneRepositorySuccess(t *testing.T) {
 
 	t.Run("repository has already been cloned", func(t *testing.T) {
 
-		httpClient := httpMock{StatusCode: 500, ResponseBody: `{
+		httpClient := httpMockGcts{StatusCode: 500, ResponseBody: `{
 			"errorLog": [
 				{
 					"time": 20200414112900,
@@ -142,7 +142,7 @@ func TestGctsCloneRepositoryFailure(t *testing.T) {
 	}
 
 	t.Run("cloning repository failed", func(t *testing.T) {
-		httpClient := httpMock{StatusCode: 500, ResponseBody: `{
+		httpClient := httpMockGcts{StatusCode: 500, ResponseBody: `{
 			"errorLog": [
 				{
 					"time": 20200414112900,
