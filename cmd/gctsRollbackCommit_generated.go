@@ -40,6 +40,8 @@ func GctsRollbackCommitCommand() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			log.RegisterSecret(stepConfig.Username)
+			log.RegisterSecret(stepConfig.Password)
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
