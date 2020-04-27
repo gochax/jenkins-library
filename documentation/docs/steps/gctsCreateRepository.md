@@ -20,7 +20,7 @@ Example configuration for the use in a Jenkinsfile.
 ```groovy
 gctsCreateRepository(
   script: this,
-  host: "abap.server.com:port",
+  host: "https://abap.server.com:port",
   client: "000",
   credentialsId: 'ABAPUserPasswordCredentialsId',
   repository: "myrepo",
@@ -36,7 +36,7 @@ Example configuration for the use in a yaml config file (such as `.pipeline/conf
 steps:
   <...>
   gctsCreateRepository:
-    host: "abap.server.com:port"
+    host: "https://abap.server.com:port"
     client: "000"
     username: "ABAPUsername"
     password: "ABAPPassword"
