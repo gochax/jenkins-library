@@ -66,15 +66,12 @@ func Execute() {
 	rootCmd.AddCommand(MavenBuildCommand())
 	rootCmd.AddCommand(MavenExecuteStaticCodeChecksCommand())
 	rootCmd.AddCommand(NexusUploadCommand())
-<<<<<<< HEAD
 	rootCmd.AddCommand(GctsCloneRepositoryCommand())
 	rootCmd.AddCommand(GctsCreateRepositoryCommand())
 	rootCmd.AddCommand(GctsDeployCommitCommand())
 	rootCmd.AddCommand(GctsRollbackCommitCommand())
 	rootCmd.AddCommand(GctsRunUnitTestsForAllRepoPackagesCommand())
-=======
 	rootCmd.AddCommand(MalwareExecuteScanCommand())
->>>>>>> master
 
 	addRootFlags(rootCmd)
 	if err := rootCmd.Execute(); err != nil {
