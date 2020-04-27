@@ -19,6 +19,7 @@ spec:
         - STAGES
         - STEPS
         mandatory: true
+        secret: true
       - name: password
         type: string
         description: Password to authenticate to the ABAP system
@@ -27,6 +28,7 @@ spec:
         - STAGES
         - STEPS
         mandatory: true
+        secret: true
       - name: repository
         type: string
         description: Specifies the name (ID) of the local repsitory on the ABAP system
