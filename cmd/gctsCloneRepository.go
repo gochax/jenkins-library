@@ -1,11 +1,11 @@
 package cmd
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
 
+	gabs "github.com/Jeffail/gabs/v2"
 	"github.com/SAP/jenkins-library/pkg/command"
 	piperhttp "github.com/SAP/jenkins-library/pkg/http"
 	"github.com/SAP/jenkins-library/pkg/log"
@@ -45,23 +45,6 @@ func cloneRepository(config *gctsCloneRepositoryOptions, telemetryData *telemetr
 	}
 	httpClient.SetOptions(clientOptions)
 
-	type cloneResultBody struct {
-		RID          string `json:"rid"`
-		CheckoutTime int    `json:"checkoutTime"`
-		FromCommit   string `json:"fromCommit"`
-		ToCommit     string `json:"toCommit"`
-		Caller       string `json:"caller"`
-		Request      string `json:"request"`
-		Type         string `json:"type"`
-	}
-
-	type cloneResponseBody struct {
-		Result    cloneResultBody `json:"result"`
-		Log       []logs          `json:"log"`
-		Exception exception       `json:"exception"`
-		ErrorLogs []logs          `json:"errorLog"`
-	}
-
 	header := make(http.Header)
 	header.Set("Content-Type", "application/json")
 	header.Add("Accept", "application/json")
@@ -82,59 +65,37 @@ func cloneRepository(config *gctsCloneRepositoryOptions, telemetryData *telemetr
 		return errors.Errorf("cloning the repository failed: %v", httpErr)
 	}
 
-	var response cloneResponseBody
-	parsingErr := parseHTTPResponseBodyJSON(resp, &response)
+	bodyText, readErr := ioutil.ReadAll(resp.Body)
+
+	if readErr != nil {
+		return errors.Wrap(readErr, "cloning the repository failed")
+	}
+
+	response, parsingErr := gabs.ParseJSON([]byte(bodyText))
 
 	if parsingErr != nil {
 		return errors.Wrap(parsingErr, "cloning the repository failed")
 	}
 
 	if httpErr != nil {
-		if resp.StatusCode == 500 && response.ErrorLogs[1].Code == "GCTS.CLIENT.1420" {
-			log.Entry().
-				WithField("repository", config.Repository).
-				Info("the repository has already been cloned")
-			return nil
+		if resp.StatusCode == 500 {
+			if exception, ok := response.Path("errorLog.1.code").Data().(string); ok && exception == "GCTS.CLIENT.1420" {
+				log.Entry().
+					WithField("repository", config.Repository).
+					Info("the repository has already been cloned")
+				return nil
+			} else if exception, ok := response.Path("errorLog.1.code").Data().(string); ok && exception == "GCTS.CLIENT.3302" {
+				log.Entry().Errorf("%v", response.Path("errorLog.1.message").Data().(string))
+				log.Entry().Error("possible reason: the remote repository is set to 'private'. you need to provide the local ABAP server repository with authentication credentials to the remote Git repository in order to clone it.")
+				return errors.Wrap(httpErr, "cloning the repository failed")
+			}
 		}
+		log.Entry().Errorf("a HTTP error occured! Response body: %v", response)
 		return errors.Wrap(httpErr, "cloning the repository failed")
 	}
 
 	log.Entry().
 		WithField("repository", config.Repository).
 		Info("successfully cloned the Git repository to the local repository")
-	return nil
-}
-
-type exception struct {
-	Message     string `json:"message"`
-	Description string `json:"description"`
-	Code        int    `json:"code"`
-}
-
-type logs struct {
-	Time     int    `json:"time"`
-	User     string `json:"user"`
-	Section  string `json:"section"`
-	Action   string `json:"action"`
-	Severity string `json:"severity"`
-	Message  string `json:"message"`
-	Code     string `json:"code"`
-}
-
-func parseHTTPResponseBodyJSON(resp *http.Response, response interface{}) error {
-	if resp == nil {
-		return errors.Errorf("cannot parse HTTP response with value <nil>")
-	}
-
-	bodyText, readErr := ioutil.ReadAll(resp.Body)
-	if readErr != nil {
-		return errors.Wrap(readErr, "cannot read HTTP response body")
-	}
-
-	marshalErr := json.Unmarshal(bodyText, &response)
-	if marshalErr != nil {
-		return errors.Wrap(marshalErr, "cannot parse HTTP response as JSON")
-	}
-
 	return nil
 }

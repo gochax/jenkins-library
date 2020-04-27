@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"io/ioutil"
 	"net/http/cookiejar"
 
+	gabs "github.com/Jeffail/gabs/v2"
 	"github.com/SAP/jenkins-library/pkg/command"
 	piperhttp "github.com/SAP/jenkins-library/pkg/http"
 	"github.com/SAP/jenkins-library/pkg/log"
@@ -42,15 +44,6 @@ func deployCommit(config *gctsDeployCommitOptions, telemetryData *telemetry.Cust
 	}
 	httpClient.SetOptions(clientOptions)
 
-	type deployResponseBody struct {
-		Trkorr     string    `json:"trkorr"`
-		FromCommit string    `json:"fromCommit"`
-		ToCommit   string    `json:"toCommit"`
-		Log        []logs    `json:"log"`
-		Exception  exception `json:"exception"`
-		ErrorLogs  []logs    `json:"errorLog"`
-	}
-
 	url := config.Host +
 		"/sap/bc/cts_abapvcs/repository/" + config.Repository +
 		"/pullByCommit?sap-client=" + config.Client
@@ -70,15 +63,20 @@ func deployCommit(config *gctsDeployCommitOptions, telemetryData *telemetry.Cust
 		return errors.Errorf("deploy commit failed: %v", httpErr)
 	}
 
-	var response deployResponseBody
-	parsingErr := parseHTTPResponseBodyJSON(resp, &response)
+	bodyText, readErr := ioutil.ReadAll(resp.Body)
+
+	if readErr != nil {
+		return errors.Wrapf(readErr, "deploying commit failed")
+	}
+
+	response, parsingErr := gabs.ParseJSON([]byte(bodyText))
 
 	if parsingErr != nil {
-		log.Entry().Warning(parsingErr)
+		return errors.Wrap(parsingErr, "deploying commit failed")
 	}
 
 	log.Entry().
 		WithField("repository", config.Repository).
-		Infof("successfully deployed commit %v (previous commit was %v)", response.ToCommit, response.FromCommit)
+		Infof("successfully deployed commit %v (previous commit was %v)", response.Path("toCommit").Data().(string), response.Path("fromCommit").Data().(string))
 	return nil
 }

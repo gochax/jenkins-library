@@ -2,11 +2,13 @@ package cmd
 
 import (
 	"bytes"
+	"encoding/json"
 	"encoding/xml"
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
 
+	// gabs "github.com/Jeffail/gabs/v2"
 	"github.com/SAP/jenkins-library/pkg/command"
 	piperhttp "github.com/SAP/jenkins-library/pkg/http"
 	"github.com/SAP/jenkins-library/pkg/log"
@@ -197,10 +199,10 @@ func getPackageList(config *gctsRunUnitTestsForAllRepoPackagesOptions, telemetry
 	}
 
 	type objectsResponseBody struct {
-		Objects   []object  `json:"objects"`
-		Log       []logs    `json:"log"`
-		Exception exception `json:"exception"`
-		ErrorLogs []logs    `json:"errorLog"`
+		Objects   []object      `json:"objects"`
+		Log       []gctsLogs    `json:"log"`
+		Exception gctsException `json:"exception"`
+		ErrorLogs []gctsLogs    `json:"errorLog"`
 	}
 
 	url := config.Host +
@@ -251,6 +253,40 @@ func parseHTTPResponseBodyXML(resp *http.Response, response interface{}) error {
 	}
 
 	return nil
+}
+
+func parseHTTPResponseBodyJSON(resp *http.Response, response interface{}) error {
+	if resp == nil {
+		return errors.Errorf("cannot parse HTTP response with value <nil>")
+	}
+
+	bodyText, readErr := ioutil.ReadAll(resp.Body)
+	if readErr != nil {
+		return errors.Wrap(readErr, "cannot read HTTP response body")
+	}
+
+	marshalErr := json.Unmarshal(bodyText, &response)
+	if marshalErr != nil {
+		return errors.Wrap(marshalErr, "cannot parse HTTP response as JSON")
+	}
+
+	return nil
+}
+
+type gctsException struct {
+	Message     string `json:"message"`
+	Description string `json:"description"`
+	Code        int    `json:"code"`
+}
+
+type gctsLogs struct {
+	Time     int    `json:"time"`
+	User     string `json:"user"`
+	Section  string `json:"section"`
+	Action   string `json:"action"`
+	Severity string `json:"severity"`
+	Message  string `json:"message"`
+	Code     string `json:"code"`
 }
 
 type runResult struct {

@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"net/http/cookiejar"
+	"io/ioutil"
 
+	gabs "github.com/Jeffail/gabs/v2"
 	"github.com/SAP/jenkins-library/pkg/command"
 	piperhttp "github.com/SAP/jenkins-library/pkg/http"
 	"github.com/SAP/jenkins-library/pkg/log"
@@ -42,22 +44,22 @@ func rollbackCommit(config *gctsRollbackCommitOptions, telemetryData *telemetry.
 	}
 	httpClient.SetOptions(clientOptions)
 
-	type rollbackResultBody struct {
-		RID          string `json:"rid"`
-		CheckoutTime int    `json:"checkoutTime"`
-		FromCommit   string `json:"fromCommit"`
-		ToCommit     string `json:"toCommit"`
-		Caller       string `json:"caller"`
-		Request      string `json:"request"`
-		Type         string `json:"type"`
-	}
+	// type rollbackResultBody struct {
+	// 	RID          string `json:"rid"`
+	// 	CheckoutTime int    `json:"checkoutTime"`
+	// 	FromCommit   string `json:"fromCommit"`
+	// 	ToCommit     string `json:"toCommit"`
+	// 	Caller       string `json:"caller"`
+	// 	Request      string `json:"request"`
+	// 	Type         string `json:"type"`
+	// }
 
-	type rollbackResponseBody struct {
-		Result    []rollbackResultBody `json:"result"`
-		Log       []logs               `json:"log"`
-		Exception exception            `json:"exception"`
-		ErrorLogs []logs               `json:"errorLog"`
-	}
+	// type rollbackResponseBody struct {
+	// 	Result    []rollbackResultBody `json:"result"`
+	// 	Log       []logs               `json:"log"`
+	// 	Exception exception            `json:"exception"`
+	// 	ErrorLogs []logs               `json:"errorLog"`
+	// }
 
 	url := config.Host +
 		"/sap/bc/cts_abapvcs/repository/" + config.Repository +
@@ -75,18 +77,30 @@ func rollbackCommit(config *gctsRollbackCommitOptions, telemetryData *telemetry.
 		return errors.Wrap(httpErr, "rollback commit failed")
 	}
 
-	var response rollbackResponseBody
-	parsingErr := parseHTTPResponseBodyJSON(resp, &response)
+	// var response rollbackResponseBody
+	// parsingErr := parseHTTPResponseBodyJSON(resp, &response)
+
+	// if parsingErr != nil {
+	// 	log.Entry().Warning(parsingErr)
+	// }
+
+	bodyText, readErr := ioutil.ReadAll(resp.Body)
+
+	if readErr != nil {
+		return errors.Wrapf(readErr, "deploying commit failed")
+	}
+
+	response, parsingErr := gabs.ParseJSON([]byte(bodyText))
 
 	if parsingErr != nil {
-		log.Entry().Warning(parsingErr)
+		return errors.Wrap(parsingErr, "deploying commit failed")
 	}
 
 	var deployParams []string
 	if config.Commit != "" {
 		deployParams = []string{"gctsDeployCommit", "--username", config.Username, "--password", config.Password, "--host", config.Host, "--client", config.Client, "--repository", config.Repository, "--commit", config.Commit}
-	} else if response.Result[0].FromCommit != "" {
-		deployParams = []string{"gctsDeployCommit", "--username", config.Username, "--password", config.Password, "--host", config.Host, "--client", config.Client, "--repository", config.Repository, "--commit", response.Result[0].FromCommit}
+	} else if fromCommit, ok := response.Path("result.0.fromCommit").Data().(string); ok {
+		deployParams = []string{"gctsDeployCommit", "--username", config.Username, "--password", config.Password, "--host", config.Host, "--client", config.Client, "--repository", config.Repository, "--commit", fromCommit}
 	} else {
 		return errors.Errorf("no commit to rollback to identified")
 	}
