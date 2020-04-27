@@ -18,7 +18,7 @@ Learn more about gCTS [here](https://help.sap.com/viewer/4a368c163b08418890a406d
 Example configuration for the use in a Jenkinsfile.
 
 ```groovy
-gctsCreateRepository(
+gctsRunUnitTestsForAllRepoPackages(
   script: this,
   host: "https://abap.server.com:port",
   client: "000",
@@ -32,7 +32,7 @@ Example configuration for the use in a yaml config file (such as `.pipeline/conf
 ```yaml
 steps:
   <...>
-  gctsCreateRepository:
+  gctsRunUnitTestsForAllRepoPackages:
     host: "https://abap.server.com:port"
     client: "000"
     username: "ABAPUsername"
