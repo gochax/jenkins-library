@@ -27,7 +27,7 @@ gctsRollbackCommit(
   )
 ```
 
-Example configuration for the use in a yaml config file (such as `.pipeline/config.yaml`).
+Example for the use in a YAML configuration file (such as `.pipeline/config.yaml`).
 
 ```yaml
 steps:
