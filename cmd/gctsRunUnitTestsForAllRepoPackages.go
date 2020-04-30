@@ -101,6 +101,7 @@ func discoverServer(config *gctsRunUnitTestsForAllRepoPackagesOptions, telemetry
 		}
 	}()
 
+	// TODO aufsplitten
 	if disc == nil || disc.Header == nil || httpErr != nil {
 		if httpErr != nil {
 			return nil, errors.Errorf("discovery of the ABAP server failed: %v", httpErr)
