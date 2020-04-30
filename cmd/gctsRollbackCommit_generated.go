@@ -14,12 +14,13 @@ import (
 )
 
 type gctsRollbackCommitOptions struct {
-	Username   string `json:"username,omitempty"`
-	Password   string `json:"password,omitempty"`
-	Repository string `json:"repository,omitempty"`
-	Host       string `json:"host,omitempty"`
-	Client     string `json:"client,omitempty"`
-	Commit     string `json:"commit,omitempty"`
+	Username                  string `json:"username,omitempty"`
+	Password                  string `json:"password,omitempty"`
+	Repository                string `json:"repository,omitempty"`
+	Host                      string `json:"host,omitempty"`
+	Client                    string `json:"client,omitempty"`
+	Commit                    string `json:"commit,omitempty"`
+	GithubPersonalAccessToken string `json:"githubPersonalAccessToken,omitempty"`
 }
 
 // GctsRollbackCommitCommand Perfoms roll back of one (default) or several commit(s)
@@ -42,6 +43,7 @@ func GctsRollbackCommitCommand() *cobra.Command {
 			}
 			log.RegisterSecret(stepConfig.Username)
 			log.RegisterSecret(stepConfig.Password)
+			log.RegisterSecret(stepConfig.GithubPersonalAccessToken)
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
@@ -70,6 +72,7 @@ func addGctsRollbackCommitFlags(cmd *cobra.Command, stepConfig *gctsRollbackComm
 	cmd.Flags().StringVar(&stepConfig.Host, "host", os.Getenv("PIPER_host"), "Specifies the protocol and host adress, including the port. Please provide in the format '<protocol>://<host>:<port>'")
 	cmd.Flags().StringVar(&stepConfig.Client, "client", os.Getenv("PIPER_client"), "Specifies the client of the ABAP system to be adressed")
 	cmd.Flags().StringVar(&stepConfig.Commit, "commit", os.Getenv("PIPER_commit"), "Specifies the commit to deploy")
+	cmd.Flags().StringVar(&stepConfig.GithubPersonalAccessToken, "githubPersonalAccessToken", os.Getenv("PIPER_githubPersonalAccessToken"), "GitHub personal access token with at least read permissions for the remote repository")
 
 	cmd.MarkFlagRequired("username")
 	cmd.MarkFlagRequired("password")
@@ -130,6 +133,14 @@ func gctsRollbackCommitMetadata() config.StepData {
 					},
 					{
 						Name:        "commit",
+						ResourceRef: []config.ResourceReference{},
+						Scope:       []string{"PARAMETERS", "STAGES", "STEPS"},
+						Type:        "string",
+						Mandatory:   false,
+						Aliases:     []config.Alias{},
+					},
+					{
+						Name:        "githubPersonalAccessToken",
 						ResourceRef: []config.ResourceReference{},
 						Scope:       []string{"PARAMETERS", "STAGES", "STEPS"},
 						Type:        "string",
