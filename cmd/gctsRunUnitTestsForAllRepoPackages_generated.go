@@ -30,7 +30,7 @@ func GctsRunUnitTestsForAllRepoPackagesCommand() *cobra.Command {
 	var createGctsRunUnitTestsForAllRepoPackagesCmd = &cobra.Command{
 		Use:   "gctsRunUnitTestsForAllRepoPackages",
 		Short: "Runs all existing unit tests for the repository packages",
-		Long:  `Will execute every unit test associated with a package belonging to the specified local repository on an ABAP system.`,
+		Long:  `This step will execute every unit test associated with a package belonging to the specified local repository on an ABAP system.`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			startTime = time.Now()
 			log.SetStepName("gctsRunUnitTestsForAllRepoPackages")
