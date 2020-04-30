@@ -60,3 +60,11 @@ spec:
         - PARAMETERS
         - STAGES
         - STEPS
+      - name: githubPersonalAccessToken
+        type: string
+        description: GitHub personal access token with at least read permissions for the remote repository
+        scope:
+        - PARAMETERS
+        - STAGES
+        - STEPS
+        secret: true
