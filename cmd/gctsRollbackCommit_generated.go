@@ -32,7 +32,9 @@ func GctsRollbackCommitCommand() *cobra.Command {
 	var createGctsRollbackCommitCmd = &cobra.Command{
 		Use:   "gctsRollbackCommit",
 		Short: "Perfoms roll back of one (default) or several commit(s)",
-		Long:  `This step performs a rollback of commit(s) in a local ABAP system repository. If called without a <commit> parameter gctsRollbackCommit will roll back ONE commit.`,
+		Long: `This step performs a rollback of commit(s) in a local ABAP system repository. If a <commit> parameter is specified, it will be used as the target commit for the rollback.
+If no <commit> parameter is specified and the remote repository domain is 'github.com', the last commit with status 'success' will be used for the rollback. Otherwise,
+gctsRollbackCommit will rollback to the previous active commit in the local repository.`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			startTime = time.Now()
 			log.SetStepName("gctsRollbackCommit")
