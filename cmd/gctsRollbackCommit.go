@@ -69,7 +69,12 @@ func rollbackCommit(config *gctsRollbackCommitOptions, telemetryData *telemetry.
 	} else if parsedURL.Host == "github.com" {
 		log.Entry().Info("Remote repository domain is 'github.com'. Trying to rollback to last commit with status 'success'.")
 
-		successCommit, err := getLastSuccessfullCommit(config, telemetryData, httpClient, parsedURL)
+		commitList, err := getCommits(config, telemetryData, httpClient)
+		if err != nil {
+			return errors.Wrap(err, "could not get repository commits")
+		}
+
+		successCommit, err := getLastSuccessfullCommit(config, telemetryData, httpClient, parsedURL, commitList)
 		if err != nil {
 			return errors.Wrap(err, "could not determine successfull commit")
 		}
@@ -84,7 +89,7 @@ func rollbackCommit(config *gctsRollbackCommitOptions, telemetryData *telemetry.
 		if repoHistory.Result[0].FromCommit != "" {
 			deployParams = []string{"gctsDeployCommit", "--username", config.Username, "--password", config.Password, "--host", config.Host, "--client", config.Client, "--repository", config.Repository, "--commit", repoHistory.Result[0].FromCommit}
 		} else {
-			return errors.Errorf("no commit to rollback to (fromCommit) could be identified from the repositorie's commit history")
+			return errors.Errorf("no commit to rollback to (fromCommit) could be identified from the repository commit history")
 		}
 	}
 
@@ -100,12 +105,7 @@ func rollbackCommit(config *gctsRollbackCommitOptions, telemetryData *telemetry.
 	return nil
 }
 
-func getLastSuccessfullCommit(config *gctsRollbackCommitOptions, telemetryData *telemetry.CustomData, httpClient piperhttp.Sender, githubURL *url.URL) (string, error) {
-
-	commitList, err := getCommits(config, telemetryData, httpClient)
-	if err != nil {
-		return "", err
-	}
+func getLastSuccessfullCommit(config *gctsRollbackCommitOptions, telemetryData *telemetry.CustomData, httpClient piperhttp.Sender, githubURL *url.URL, commitList []string) (string, error) {
 
 	cookieJar, cookieErr := cookiejar.New(nil)
 	if cookieErr != nil {
