@@ -101,12 +101,10 @@ func discoverServer(config *gctsRunUnitTestsForAllRepoPackagesOptions, telemetry
 		}
 	}()
 
-	// TODO aufsplitten
-	if disc == nil || disc.Header == nil || httpErr != nil {
-		if httpErr != nil {
-			return nil, errors.Errorf("discovery of the ABAP server failed: %v", httpErr)
-		}
-		return nil, errors.Errorf("discovery of the ABAP server failed: http response or header are <nil>")
+	if httpErr != nil {
+		return []string{}, errors.Wrap("discovery of the ABAP server failed", httpErr)
+	} else if disc == nil || disc.Header == nil {
+		return []string{}, errors.New("discovery of the ABAP server failed: did not retrieve a HTTP response")
 	}
 
 	return &disc.Header, nil
@@ -147,8 +145,10 @@ func executeTestsForPackage(config *gctsRunUnitTestsForAllRepoPackagesOptions, t
 		}
 	}()
 
-	if resp == nil || httpErr != nil {
-		return errors.Errorf("execution of unit tests failed: %v", httpErr)
+	if httpErr != nil {
+		return errors.Wrap("execution of unit tests failed", httpErr)
+	} else if resp == nil {
+		return errors.New("execution of unit tests failed: did not retrieve a HTTP response")
 	}
 
 	var response runResult
@@ -218,8 +218,10 @@ func getPackageList(config *gctsRunUnitTestsForAllRepoPackagesOptions, telemetry
 		}
 	}()
 
-	if resp == nil || httpErr != nil {
-		return []string{}, errors.Errorf("failed to get repository objects: %v", httpErr)
+	if httpErr != nil {
+		return []string{}, errors.Wrap("getting software package list failed", httpErr)
+	} else if resp == nil {
+		return []string{}, errors.New("getting software package list failed: did not retrieve a HTTP response")
 	}
 
 	var response objectsResponseBody
