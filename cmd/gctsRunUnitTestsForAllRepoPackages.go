@@ -263,12 +263,12 @@ func parseHTTPResponseBodyJSON(resp *http.Response, response interface{}) error 
 
 	bodyText, readErr := ioutil.ReadAll(resp.Body)
 	if readErr != nil {
-		return errors.Wrap(readErr, "cannot read HTTP response body")
+		return errors.Wrapf(readErr, "HTTP response body could not be read")
 	}
 
 	marshalErr := json.Unmarshal(bodyText, &response)
 	if marshalErr != nil {
-		return errors.Wrap(marshalErr, "cannot parse HTTP response as JSON")
+		return errors.Wrapf(marshalErr, "HTTP response body could not be parsed as JSON: %v", string(bodyText))
 	}
 
 	return nil
