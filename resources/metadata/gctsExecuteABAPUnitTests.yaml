@@ -1,5 +1,5 @@
 metadata:
-  name: gctsRunUnitTestsForAllRepoPackages
+  name: gctsExecuteABAPUnitTests
   description: Runs all existing unit tests for the repository packages
   longDescription: |
     This step will execute every unit test associated with a package belonging to the specified local repository on an ABAP system.

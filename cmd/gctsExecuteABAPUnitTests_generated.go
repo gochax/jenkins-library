@@ -13,7 +13,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type gctsRunUnitTestsForAllRepoPackagesOptions struct {
+type gctsExecuteABAPUnitTestsOptions struct {
 	Username   string `json:"username,omitempty"`
 	Password   string `json:"password,omitempty"`
 	Repository string `json:"repository,omitempty"`
@@ -21,21 +21,21 @@ type gctsRunUnitTestsForAllRepoPackagesOptions struct {
 	Client     string `json:"client,omitempty"`
 }
 
-// GctsRunUnitTestsForAllRepoPackagesCommand Runs all existing unit tests for the repository packages
-func GctsRunUnitTestsForAllRepoPackagesCommand() *cobra.Command {
-	metadata := gctsRunUnitTestsForAllRepoPackagesMetadata()
-	var stepConfig gctsRunUnitTestsForAllRepoPackagesOptions
+// GctsExecuteABAPUnitTestsCommand Runs all existing unit tests for the repository packages
+func GctsExecuteABAPUnitTestsCommand() *cobra.Command {
+	metadata := gctsExecuteABAPUnitTestsMetadata()
+	var stepConfig gctsExecuteABAPUnitTestsOptions
 	var startTime time.Time
 
-	var createGctsRunUnitTestsForAllRepoPackagesCmd = &cobra.Command{
-		Use:   "gctsRunUnitTestsForAllRepoPackages",
+	var createGctsExecuteABAPUnitTestsCmd = &cobra.Command{
+		Use:   "gctsExecuteABAPUnitTests",
 		Short: "Runs all existing unit tests for the repository packages",
 		Long:  `This step will execute every unit test associated with a package belonging to the specified local repository on an ABAP system.`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			startTime = time.Now()
-			log.SetStepName("gctsRunUnitTestsForAllRepoPackages")
+			log.SetStepName("gctsExecuteABAPUnitTests")
 			log.SetVerbose(GeneralConfig.Verbose)
-			err := PrepareConfig(cmd, &metadata, "gctsRunUnitTestsForAllRepoPackages", &stepConfig, config.OpenPiperFile)
+			err := PrepareConfig(cmd, &metadata, "gctsExecuteABAPUnitTests", &stepConfig, config.OpenPiperFile)
 			if err != nil {
 				return err
 			}
@@ -52,17 +52,17 @@ func GctsRunUnitTestsForAllRepoPackagesCommand() *cobra.Command {
 			}
 			log.DeferExitHandler(handler)
 			defer handler()
-			telemetry.Initialize(GeneralConfig.NoTelemetry, "gctsRunUnitTestsForAllRepoPackages")
-			gctsRunUnitTestsForAllRepoPackages(stepConfig, &telemetryData)
+			telemetry.Initialize(GeneralConfig.NoTelemetry, "gctsExecuteABAPUnitTests")
+			gctsExecuteABAPUnitTests(stepConfig, &telemetryData)
 			telemetryData.ErrorCode = "0"
 		},
 	}
 
-	addGctsRunUnitTestsForAllRepoPackagesFlags(createGctsRunUnitTestsForAllRepoPackagesCmd, &stepConfig)
-	return createGctsRunUnitTestsForAllRepoPackagesCmd
+	addGctsExecuteABAPUnitTestsFlags(createGctsExecuteABAPUnitTestsCmd, &stepConfig)
+	return createGctsExecuteABAPUnitTestsCmd
 }
 
-func addGctsRunUnitTestsForAllRepoPackagesFlags(cmd *cobra.Command, stepConfig *gctsRunUnitTestsForAllRepoPackagesOptions) {
+func addGctsExecuteABAPUnitTestsFlags(cmd *cobra.Command, stepConfig *gctsExecuteABAPUnitTestsOptions) {
 	cmd.Flags().StringVar(&stepConfig.Username, "username", os.Getenv("PIPER_username"), "User to authenticate to the ABAP system")
 	cmd.Flags().StringVar(&stepConfig.Password, "password", os.Getenv("PIPER_password"), "Password to authenticate to the ABAP system")
 	cmd.Flags().StringVar(&stepConfig.Repository, "repository", os.Getenv("PIPER_repository"), "Specifies the name (ID) of the local repsitory on the ABAP system")
@@ -77,10 +77,10 @@ func addGctsRunUnitTestsForAllRepoPackagesFlags(cmd *cobra.Command, stepConfig *
 }
 
 // retrieve step metadata
-func gctsRunUnitTestsForAllRepoPackagesMetadata() config.StepData {
+func gctsExecuteABAPUnitTestsMetadata() config.StepData {
 	var theMetaData = config.StepData{
 		Metadata: config.StepMetadata{
-			Name:    "gctsRunUnitTestsForAllRepoPackages",
+			Name:    "gctsExecuteABAPUnitTests",
 			Aliases: []config.Alias{},
 		},
 		Spec: config.StepSpec{

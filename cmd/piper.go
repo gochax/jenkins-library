@@ -70,7 +70,7 @@ func Execute() {
 	rootCmd.AddCommand(GctsCreateRepositoryCommand())
 	rootCmd.AddCommand(GctsDeployCommitCommand())
 	rootCmd.AddCommand(GctsRollbackCommitCommand())
-	rootCmd.AddCommand(GctsRunUnitTestsForAllRepoPackagesCommand())
+	rootCmd.AddCommand(GctsExecuteABAPUnitTestsCommand())
 	rootCmd.AddCommand(MalwareExecuteScanCommand())
 
 	addRootFlags(rootCmd)

@@ -9,7 +9,7 @@ import (
 
 func TestDiscoverySuccess(t *testing.T) {
 
-	config := gctsRunUnitTestsForAllRepoPackagesOptions{
+	config := gctsExecuteABAPUnitTestsOptions{
 		Host:       "http://testHost.com:50000",
 		Client:     "000",
 		Repository: "testRepo",
@@ -50,7 +50,7 @@ func TestDiscoverySuccess(t *testing.T) {
 
 func TestDiscoveryFailure(t *testing.T) {
 
-	config := gctsRunUnitTestsForAllRepoPackagesOptions{
+	config := gctsExecuteABAPUnitTestsOptions{
 		Host:       "http://testHost.com:50000",
 		Client:     "000",
 		Repository: "testRepo",
@@ -145,7 +145,7 @@ func TestDiscoveryFailure(t *testing.T) {
 
 func TestGetPackageListSuccess(t *testing.T) {
 
-	config := gctsRunUnitTestsForAllRepoPackagesOptions{
+	config := gctsExecuteABAPUnitTestsOptions{
 		Host:       "http://testHost.com:50000",
 		Client:     "000",
 		Repository: "testRepo",
@@ -226,7 +226,7 @@ func TestGetPackageListSuccess(t *testing.T) {
 
 func TestGetPackageListFailure(t *testing.T) {
 
-	config := gctsRunUnitTestsForAllRepoPackagesOptions{
+	config := gctsExecuteABAPUnitTestsOptions{
 		Host:       "http://testHost.com:50000",
 		Client:     "000",
 		Repository: "testRepo",
@@ -250,7 +250,7 @@ func TestGetPackageListFailure(t *testing.T) {
 
 func TestExecuteTestsForPackageSuccess(t *testing.T) {
 
-	config := gctsRunUnitTestsForAllRepoPackagesOptions{
+	config := gctsExecuteABAPUnitTestsOptions{
 		Host:       "http://testHost.com:50000",
 		Client:     "000",
 		Repository: "testRepo",
@@ -324,7 +324,7 @@ func TestExecuteTestsForPackageSuccess(t *testing.T) {
 
 func TestExecuteTestsForPackageFailure(t *testing.T) {
 
-	config := gctsRunUnitTestsForAllRepoPackagesOptions{
+	config := gctsExecuteABAPUnitTestsOptions{
 		Host:       "http://testHost.com:50000",
 		Client:     "000",
 		Repository: "testRepo",

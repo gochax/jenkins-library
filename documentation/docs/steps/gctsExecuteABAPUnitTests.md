@@ -18,7 +18,7 @@ Learn more about the SAP git-enabled Central Transport Sytem (gCTS) [here](https
 Example configuration for the use in a Jenkinsfile.
 
 ```groovy
-gctsRunUnitTestsForAllRepoPackages(
+gctsExecuteABAPUnitTests(
   script: this,
   host: "https://abap.server.com:port",
   client: "000",
@@ -32,7 +32,7 @@ Example configuration for the use in a yaml config file (such as `.pipeline/conf
 ```yaml
 steps:
   <...>
-  gctsRunUnitTestsForAllRepoPackages:
+  gctsExecuteABAPUnitTests:
     host: "https://abap.server.com:port"
     client: "000"
     username: "ABAPUsername"

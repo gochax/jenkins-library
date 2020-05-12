@@ -15,7 +15,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func gctsRunUnitTestsForAllRepoPackages(config gctsRunUnitTestsForAllRepoPackagesOptions, telemetryData *telemetry.CustomData) {
+func gctsExecuteABAPUnitTests(config gctsExecuteABAPUnitTestsOptions, telemetryData *telemetry.CustomData) {
 	// for command execution use Command
 	c := command.Command{}
 	// reroute command output to logging framework
@@ -34,7 +34,7 @@ func gctsRunUnitTestsForAllRepoPackages(config gctsRunUnitTestsForAllRepoPackage
 	}
 }
 
-func runUnitTestsForAllRepoPackages(config *gctsRunUnitTestsForAllRepoPackagesOptions, telemetryData *telemetry.CustomData, command execRunner, httpClient piperhttp.Sender) error {
+func runUnitTestsForAllRepoPackages(config *gctsExecuteABAPUnitTestsOptions, telemetryData *telemetry.CustomData, command execRunner, httpClient piperhttp.Sender) error {
 
 	cookieJar, cookieErr := cookiejar.New(nil)
 	if cookieErr != nil {
@@ -82,7 +82,7 @@ func runUnitTestsForAllRepoPackages(config *gctsRunUnitTestsForAllRepoPackagesOp
 	return nil
 }
 
-func discoverServer(config *gctsRunUnitTestsForAllRepoPackagesOptions, telemetryData *telemetry.CustomData, client piperhttp.Sender) (*http.Header, error) {
+func discoverServer(config *gctsExecuteABAPUnitTestsOptions, telemetryData *telemetry.CustomData, client piperhttp.Sender) (*http.Header, error) {
 
 	url := config.Host +
 		"/sap/bc/adt/core/discovery?sap-client=" + config.Client
@@ -101,15 +101,15 @@ func discoverServer(config *gctsRunUnitTestsForAllRepoPackagesOptions, telemetry
 	}()
 
 	if httpErr != nil {
-		return []string{}, errors.Wrap("discovery of the ABAP server failed", httpErr)
+		return nil, errors.Wrap(httpErr, "discovery of the ABAP server failed")
 	} else if disc == nil || disc.Header == nil {
-		return []string{}, errors.New("discovery of the ABAP server failed: did not retrieve a HTTP response")
+		return nil, errors.New("discovery of the ABAP server failed: did not retrieve a HTTP response")
 	}
 
 	return &disc.Header, nil
 }
 
-func executeTestsForPackage(config *gctsRunUnitTestsForAllRepoPackagesOptions, telemetryData *telemetry.CustomData, client piperhttp.Sender, header http.Header, packageName string) error {
+func executeTestsForPackage(config *gctsExecuteABAPUnitTestsOptions, telemetryData *telemetry.CustomData, client piperhttp.Sender, header http.Header, packageName string) error {
 
 	var xmlBody = []byte(`<?xml version="1.0" encoding="UTF-8"?>
 	<aunit:runConfiguration
@@ -145,7 +145,7 @@ func executeTestsForPackage(config *gctsRunUnitTestsForAllRepoPackagesOptions, t
 	}()
 
 	if httpErr != nil {
-		return errors.Wrap("execution of unit tests failed", httpErr)
+		return errors.Wrap(httpErr, "execution of unit tests failed")
 	} else if resp == nil {
 		return errors.New("execution of unit tests failed: did not retrieve a HTTP response")
 	}
@@ -189,7 +189,7 @@ func parseAUnitResponse(response *runResult) error {
 	return nil
 }
 
-func getPackageList(config *gctsRunUnitTestsForAllRepoPackagesOptions, telemetryData *telemetry.CustomData, client piperhttp.Sender) ([]string, error) {
+func getPackageList(config *gctsExecuteABAPUnitTestsOptions, telemetryData *telemetry.CustomData, client piperhttp.Sender) ([]string, error) {
 
 	type object struct {
 		Pgmid       string `json:"pgmid"`
@@ -218,7 +218,7 @@ func getPackageList(config *gctsRunUnitTestsForAllRepoPackagesOptions, telemetry
 	}()
 
 	if httpErr != nil {
-		return []string{}, errors.Wrap("getting software package list failed", httpErr)
+		return []string{}, errors.Wrap(httpErr, "getting software package list failed")
 	} else if resp == nil {
 		return []string{}, errors.New("getting software package list failed: did not retrieve a HTTP response")
 	}
